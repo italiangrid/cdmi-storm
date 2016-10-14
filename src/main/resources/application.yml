@@ -1,0 +1,8 @@
+backend:
+  hostname: localhost
+  port: 9990
+
+auth:
+  user:
+    name: restuser
+    password: restuser
