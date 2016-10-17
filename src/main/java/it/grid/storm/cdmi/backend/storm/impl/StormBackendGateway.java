@@ -24,22 +24,27 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import it.grid.storm.cdmi.backend.storm.BackendGateway;
-import it.grid.storm.cdmi.backend.storm.configuration.Backend;
-import it.grid.storm.cdmi.backend.storm.configuration.User;
 
 public class StormBackendGateway implements BackendGateway {
 
   private static final Logger log = LoggerFactory.getLogger(StormBackendGateway.class);
 
-  private Backend backend;
-  private User user;
+  private String hostname;
+  private int port;
+  
+  private String username;
+  private String password;
+  
   private CloseableHttpClient httpClient;
   private String beCapabilities;
 
-  public StormBackendGateway(Backend backend, User user) throws RuntimeException {
+  public StormBackendGateway(String hostname, int port, String username, String password) throws RuntimeException {
 
-    this.backend = backend;
-    this.user = user;
+    this.hostname = hostname;
+    this.port = port;
+    this.username = username;
+    this.password = password;
+    
     this.httpClient = HttpClients.createDefault();
     try {
       loadBackendCapabilitiesFromFile("/profiles.json");
@@ -55,7 +60,7 @@ public class StormBackendGateway implements BackendGateway {
 
   private String getRestApiEndpoint() {
 
-    return String.format("%s:%d", backend.getHostname(), backend.getPort());
+    return String.format("%s:%d", hostname, port);
   }
 
   private String getMetadataURI(String path) {
@@ -63,6 +68,7 @@ public class StormBackendGateway implements BackendGateway {
     return String.format("http://%s/metadata%s", getRestApiEndpoint(), path);
   }
 
+  @SuppressWarnings("unused")
   private String getRecallURI(String path) {
 
     return String.format("http://%s/recall?path=%s", getRestApiEndpoint(), path);
@@ -70,7 +76,7 @@ public class StormBackendGateway implements BackendGateway {
 
   private String getBasicAuthorizationHeader() {
 
-    String str = String.format("%s:%s", user.getName(), user.getPassword());
+    String str = String.format("%s:%s", username, password);
     return String.format("Basic ", Base64.getEncoder().encodeToString(str.getBytes()));
   }
 
