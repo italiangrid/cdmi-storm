@@ -16,11 +16,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import it.grid.storm.cdmi.backend.storm.impl.StormBackendResponseTranslator;
+import it.grid.storm.cdmi.backend.storm.impl.StormBackendResponseConverter;
 
-public class StormBackendResponseTranslatorTest {
+public class StormBackendResponseConverterTest {
 
-  private static final Logger log = LoggerFactory.getLogger(StormBackendResponseTranslatorTest.class);
+  private static final Logger log = LoggerFactory.getLogger(StormBackendResponseConverterTest.class);
 
   private JsonObject getFolderCapability() {
 
@@ -119,7 +119,7 @@ public class StormBackendResponseTranslatorTest {
   public void testGetBackendCapabilities() {
 
     JsonArray toTest = getTestCapabilities();
-    StormBackendResponseTranslator translator = new StormBackendResponseTranslator();
+    StormBackendResponseConverter translator = new StormBackendResponseConverter();
 
     log.info("Backend Capability as JSON: {}", toTest.toString());
     

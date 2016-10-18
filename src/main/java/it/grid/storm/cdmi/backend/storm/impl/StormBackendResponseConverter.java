@@ -20,11 +20,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
-import it.grid.storm.cdmi.backend.storm.ResponseTranslator;
+import it.grid.storm.cdmi.backend.storm.ResponseConverter;
 
-public class StormBackendResponseTranslator implements ResponseTranslator {
+public class StormBackendResponseConverter implements ResponseConverter {
 
-  private static final Logger log = LoggerFactory.getLogger(StormBackendResponseTranslator.class);
+  private static final Logger log = LoggerFactory.getLogger(StormBackendResponseConverter.class);
 
   private static final JsonParser jsonParser = new JsonParser();
 

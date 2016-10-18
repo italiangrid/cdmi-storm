@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.grid.storm.cdmi.backend.storm.BackendGateway;
-import it.grid.storm.cdmi.backend.storm.ResponseTranslator;
+import it.grid.storm.cdmi.backend.storm.ResponseConverter;
 
 public class StormStorageBackend implements StorageBackend {
 
@@ -21,10 +21,10 @@ public class StormStorageBackend implements StorageBackend {
    * dependencies
    */
   private BackendGateway backendGateway = null;
-  private ResponseTranslator responseTranslator = null;
+  private ResponseConverter responseTranslator = null;
 
   public StormStorageBackend(BackendGateway backendGateway,
-      ResponseTranslator responseTranslator) {
+      ResponseConverter responseTranslator) {
 
     this.backendGateway = backendGateway;
     this.responseTranslator = responseTranslator;

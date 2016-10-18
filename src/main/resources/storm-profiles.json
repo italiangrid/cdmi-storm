@@ -61,7 +61,7 @@
         "cdmi_data_redundancy": true,
         "cdmi_geographic_placement": true,
         "cdmi_latency": true,
-        "cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/ResourceOnDiskAndTape"
+        "cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/FileOnDiskAndTape"
     }
 }
 ]

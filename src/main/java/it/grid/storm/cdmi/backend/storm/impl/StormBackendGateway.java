@@ -1,12 +1,11 @@
 package it.grid.storm.cdmi.backend.storm.impl;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Base64;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -17,17 +16,16 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.indigo.cdmi.BackEndException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import it.grid.storm.cdmi.backend.storm.BackendGateway;
 
 public class StormBackendGateway implements BackendGateway {
-
-  private static final Logger log = LoggerFactory.getLogger(StormBackendGateway.class);
 
   private String hostname;
   private int port;
@@ -47,15 +45,43 @@ public class StormBackendGateway implements BackendGateway {
     
     this.httpClient = HttpClients.createDefault();
     try {
-      loadBackendCapabilitiesFromFile("/profiles.json");
+      loadBackendCapabilitiesFromFile("storm-profiles.json");
     } catch (IOException e) {
       throw new RuntimeException(e.getLocalizedMessage(), e);
     }
   }
 
-  private void loadBackendCapabilitiesFromFile(String filePath) throws IOException {
+  private void loadBackendCapabilitiesFromFile(String profilesFilePath) throws IOException {
 
-    beCapabilities = FileUtils.readFileToString(new File(filePath));
+    
+    InputStream is = getClass().getClassLoader().getResourceAsStream(profilesFilePath);
+    if (is == null) {
+      throw new RuntimeException("Failed to find required config file on CLASSPATH. "
+          + "Could not open " + profilesFilePath);
+    }
+    
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+    StringBuffer stringBuffer = new StringBuffer();
+    String inputLine;
+    while ((inputLine = reader.readLine()) != null) {
+      stringBuffer.append(inputLine);
+    }
+
+    beCapabilities = stringBuffer.toString().replaceAll("\t", "").replaceAll(" ", "");
+    
+    printPrettyJson(beCapabilities);
+  }
+
+  private void printPrettyJson(String json) {
+    JsonParser jp = new JsonParser();
+    JsonElement je = jp.parse(json);
+    printPrettyJson(je);
+  }
+
+  private void printPrettyJson(JsonElement je) {
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    System.out.println(gson.toJson(je));
   }
 
   private String getRestApiEndpoint() {
@@ -90,9 +116,7 @@ public class StormBackendGateway implements BackendGateway {
   public String getFileStatus(String stfn) {
 
     String url = getMetadataURI(stfn);
-    log.info("GET {}", url);
     String authorization = getBasicAuthorizationHeader();
-    log.info("Authorization {}", authorization);
 
     HttpGet httpGet = new HttpGet(url);
     Header authorizationHeader = new BasicHeader("Authorization", authorization);
@@ -107,7 +131,6 @@ public class StormBackendGateway implements BackendGateway {
     try {
       response = httpClient.execute(httpGet);
 
-      log.info(response.getStatusLine().toString());
       HttpEntity entity = response.getEntity();
       buffReader = new BufferedReader(new InputStreamReader(entity.getContent()));
       StringBuffer stringBuffer = new StringBuffer();
@@ -118,7 +141,6 @@ public class StormBackendGateway implements BackendGateway {
       EntityUtils.consume(entity);
 
       json = jsonParser.parse(stringBuffer.toString()).getAsJsonObject();
-      log.info(json.toString());
 
     } catch (ClientProtocolException e) {
       // TODO Auto-generated catch block

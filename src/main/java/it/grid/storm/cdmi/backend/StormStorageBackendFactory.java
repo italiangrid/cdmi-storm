@@ -7,40 +7,43 @@ import java.util.Properties;
 
 import org.indigo.cdmi.spi.StorageBackend;
 import org.indigo.cdmi.spi.StorageBackendFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import it.grid.storm.cdmi.backend.storm.BackendGateway;
+import it.grid.storm.cdmi.backend.storm.ResponseConverter;
 import it.grid.storm.cdmi.backend.storm.impl.StormBackendGateway;
-import it.grid.storm.cdmi.backend.storm.impl.StormBackendResponseTranslator;
+import it.grid.storm.cdmi.backend.storm.impl.StormBackendResponseConverter;
 
 
 public class StormStorageBackendFactory implements StorageBackendFactory {
 
-  private static final Logger log = LoggerFactory.getLogger(StormStorageBackendFactory.class);
-
   private final String propertiesFilePath = "storm-cdmi-spi.properties";
-  private final String type = "storm";
-  private final String description = "StoRM Storage Backend CDMI module";
+  public static final String type = "storm";
+  public static final String description = "StoRM Storage Backend CDMI module";
 
-  private Properties configuration;
-  private StormBackendGateway gateway;
+  private Properties configuration = new Properties();
+  private BackendGateway gateway;
+  private ResponseConverter converter;
+
+  public StormStorageBackendFactory(BackendGateway gateway, ResponseConverter converter) {
+
+    setGateway(gateway);
+    setTranslator(converter);
+  }
 
   public StormStorageBackendFactory() {
 
-    configuration = loadPropertiesFromFile(propertiesFilePath);
-
-    log.debug("Loaded configuration {}", configuration);
-
-    gateway = new StormBackendGateway(configuration.getProperty("storm.restapi.endpoint.hostname"),
+    loadPropertiesFromFile(propertiesFilePath);
+    setGateway(new StormBackendGateway(configuration.getProperty("storm.restapi.endpoint.hostname"),
         Integer.valueOf(configuration.getProperty("storm.restapi.endpoint.port")),
         configuration.getProperty("storm.restapi.authentication.user.name"),
-        configuration.getProperty("storm.restapi.authentication.user.password"));
+        configuration.getProperty("storm.restapi.authentication.user.password")));
+    setTranslator(new StormBackendResponseConverter());
   }
 
   public StorageBackend createStorageBackend(Map<String, String> arg0)
       throws IllegalArgumentException {
 
-    return new StormStorageBackend(gateway, new StormBackendResponseTranslator());
+    return new StormStorageBackend(gateway, converter);
   }
 
   public String getDescription() {
@@ -53,17 +56,30 @@ public class StormStorageBackendFactory implements StorageBackendFactory {
     return type;
   }
 
-  private Properties loadPropertiesFromFile(String propertiesFilePath) throws IllegalArgumentException {
+  private void setGateway(BackendGateway gateway) {
 
-    Properties c = new Properties();
-    InputStream is = ClassLoader.getSystemResourceAsStream(propertiesFilePath);
+    this.gateway = gateway;
+  }
+
+  private void setTranslator(ResponseConverter translator) {
+
+    this.converter = translator;
+  }
+
+  private void loadPropertiesFromFile(String propertiesFilePath) throws IllegalArgumentException {
+
+    InputStream is = getClass().getClassLoader().getResourceAsStream(propertiesFilePath);
+    if (is == null) {
+      throw new RuntimeException("Failed to find required config file on CLASSPATH. "
+          + "Could not open " + propertiesFilePath);
+    }
+
     try {
-      c.load(is);
+      configuration.load(is);
     } catch (IOException e) {
       e.printStackTrace();
       throw new IllegalArgumentException("Cannot load properties from " + propertiesFilePath, e);
     }
-    return c;
   }
 
 }
