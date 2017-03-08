@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  cdmi-server:
+    container_name: cdmi-server
+
+    build:
+      context: .
+      dockerfile: ./docker/storm-cdmi-server/Dockerfile
+      args:
+        YAML_CONFIG_FILE: ./docker/config/application.yml
+    ports:
+      - "8888:8888"
+    depends_on:
+      - redis
