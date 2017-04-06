@@ -32,7 +32,7 @@ Name | Description
 **STORM\_CAPABILITIES\_FILE** | Path to storm-capabilities.json
 **STORM\_BACKEND\_HOSTNAME** | Hostname of the extra host to add
 **STORM\_BACKEND\_IPADDR** | IP addresso of the extra host to add
-**EXTERNAL\_PORT** | Local port where CDMI server port will be map
+**EXTERNAL\_PORT** | Local port where CDMI server port will be mapped
 **CDMI\_SERVER\_PORT** | CDMI server exposed port
 
 Run docker-compose:
