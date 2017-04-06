@@ -15,8 +15,13 @@ services:
       context: .
       dockerfile: ./docker/storm-cdmi-server/Dockerfile
       args:
-        YAML_CONFIG_FILE: ./docker/config/application.yml
+        YAML_CONFIG_FILE: ${YAML_CONFIG_FILE}
+        STORM_CONFIG_FILE: ${STORM_CONFIG_FILE}
+        STORM_CAPABILITIES_FILE: ${STORM_CAPABILITIES_FILE}
+        CDMI_SERVER_PORT: ${CDMI_SERVER_PORT}
     ports:
-      - "8888:8888"
+      - "${EXTERNAL_PORT}:${CDMI_SERVER_PORT}"
     depends_on:
       - redis
+    extra_hosts:
+      - "${STORM_BACKEND_HOSTNAME}:${STORM_BACKEND_IPADDR}"
