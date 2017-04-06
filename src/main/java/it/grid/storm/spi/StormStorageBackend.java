@@ -1,8 +1,6 @@
 package it.grid.storm.spi;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.indigo.cdmi.BackEndException;
 import org.indigo.cdmi.BackendCapability;
@@ -11,31 +9,55 @@ import org.indigo.cdmi.spi.StorageBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.grid.storm.spi.rest.metadata.model.StoRIMetadata;
+
 public class StormStorageBackend implements StorageBackend {
 
-  private static final Logger log = LoggerFactory.getLogger(StormStorageBackend.class);
+	private static final Logger log = LoggerFactory.getLogger(StormStorageBackend.class);
 
-  public StormStorageBackend(Map<String, String> args) {
+	private List<BackendCapability> backendCapabilities;
+	private BackendGateway backendGateway;
+	private StormCdmi stormCdmi;
 
-    log.info("StormStorageBackend");
-  }
+	public StormStorageBackend(BackendGateway backendGateway,
+			List<BackendCapability> backendCapabilities) {
 
-  @Override
-  public List<BackendCapability> getCapabilities() throws BackEndException {
+		log.info("Storm Storage Backend");
+		this.backendGateway = backendGateway;
+		this.backendCapabilities = backendCapabilities;
+		log.debug("BackendCapabilities: {}", this.backendCapabilities);
+		this.stormCdmi = new StormCdmi(backendCapabilities);
+	}
 
-    return new ArrayList<BackendCapability>();
-  }
 
-  @Override
-  public CdmiObjectStatus getCurrentStatus(String stfn) throws BackEndException {
+	@Override
+	public List<BackendCapability> getCapabilities() throws BackEndException {
 
-    throw new BackEndException("not implemented");
-  }
+		return backendCapabilities;
+	}
 
-  @Override
-  public void updateCdmiObject(String path, String targetCapabilitiesURI) throws BackEndException {
+	@Override
+	public CdmiObjectStatus getCurrentStatus(String path) throws BackEndException {
 
-    throw new BackEndException("Not implemented");
-  }
+		StoRIMetadata meta = backendGateway.getStoRIMetadata(new UserId("cdmi"), path);
+		log.info("StoRIMetadata: {}", meta);
+
+		return stormCdmi.getStatus(meta);
+	}
+
+	@Override
+	public void updateCdmiObject(String path, String targetCapabilitiesURI) throws BackEndException {
+
+		CdmiObjectStatus objectStatus = getCurrentStatus(path);
+
+    if (objectStatus.getTargetCapabilitiesUri() != null) {
+      log.debug("object {} already in transition to {}", path,
+          objectStatus.getTargetCapabilitiesUri());
+      return;
+    }
+    log.debug("current object status {}", objectStatus.toString());
+
+		throw new BackEndException("Not implemented");
+	}
 
 }
