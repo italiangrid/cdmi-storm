@@ -1,11 +1,37 @@
 package it.grid.storm.cdmi.config;
 
-public interface PluginConfiguration {
+import java.util.List;
 
-  public String getHostname();
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-  public Integer getPort();
+@JsonInclude(Include.NON_EMPTY)
+public class PluginConfiguration {
 
-  public String getToken();
+	private BackendConfiguration backend;
+	private List<VOConfiguration> vos;
+
+	@JsonCreator
+	public PluginConfiguration(@JsonProperty("backend") BackendConfiguration backend,
+			@JsonProperty("vos") List<VOConfiguration> vos) {
+
+		this.backend = backend;
+		this.vos = vos;
+	}
+
+	public BackendConfiguration getBackend() {
+		return backend;
+	}
+
+	public List<VOConfiguration> getVos() {
+		return vos;
+	}
+
+	@Override
+	public String toString() {
+		return "PluginConfiguration [backend=" + backend + ", vos=" + vos + "]";
+	}
 
 }

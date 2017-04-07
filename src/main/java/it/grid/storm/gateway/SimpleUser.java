@@ -2,11 +2,11 @@ package it.grid.storm.gateway;
 
 import it.grid.storm.gateway.model.User;
 
-public class SimpleIdUser implements User {
+public class SimpleUser implements User {
 
 	private final String id;
 
-	public SimpleIdUser(String id) {
+	public SimpleUser(String id) {
 		this.id = id;
 	}
 

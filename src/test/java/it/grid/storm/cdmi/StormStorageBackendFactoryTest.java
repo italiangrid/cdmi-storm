@@ -25,7 +25,7 @@ public class StormStorageBackendFactoryTest {
 	private void setConfigFileProperty() {
 
 		ClassLoader classLoader = getClass().getClassLoader();
-		System.setProperty("storm.configFile", classLoader.getResource("storm.properties").getFile());
+		System.setProperty("storm.configFile", classLoader.getResource("storm-properties.json").getFile());
 	}
 
 	private void setCapabilitiesFileProperty() {

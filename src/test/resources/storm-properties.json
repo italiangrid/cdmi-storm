@@ -1,0 +1,13 @@
+{
+    "backend": {
+        "hostname": "test-hostname.local.io",
+        "port": 9998,
+        "token": "testtoken"
+        },
+    "vos": [{
+        "name": "test.vo",
+        "roots": [
+                "/test.vo"
+            ]
+        }]
+}

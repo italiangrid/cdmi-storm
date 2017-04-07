@@ -16,8 +16,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import it.grid.storm.cdmi.config.StormCapabilities;
-
 public class StormCapabilitiesTest {
 
   private static final Logger log = LoggerFactory.getLogger(StormCapabilitiesTest.class);
