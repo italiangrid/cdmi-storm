@@ -54,7 +54,7 @@ public class StormStorageBackend implements StorageBackend {
 			backendCapabilities = buildBackendCapabilities(cap);
 		} catch (IOException e) {
 			log.error(e.getMessage());
-
+			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 
 		backendGateway = new StormBackendGateway(config.getBackend().getHostname(),

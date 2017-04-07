@@ -59,7 +59,13 @@ public class StormBackendGateway implements BackendGateway {
 		log.info(response.getStatusLine().toString());
 
 		if (response.getStatusLine().getStatusCode() == 200) {
-			StoRIMetadata storiMetadata = getEntityContent(response.getEntity());
+			StoRIMetadata storiMetadata;
+			try {
+				storiMetadata = getEntityContent(response.getEntity());
+			} catch (UnsupportedOperationException | IOException e) {
+				log.error(e.getMessage());
+				throw new BackendGatewayException(e.getMessage(), e);
+			}
 			log.debug("Response entity: {}", storiMetadata);
 			return storiMetadata;
 		}
@@ -100,46 +106,23 @@ public class StormBackendGateway implements BackendGateway {
 		return response;
 	}
 
-	private StoRIMetadata getEntityContent(HttpEntity entity) throws BackendGatewayException {
+	private StoRIMetadata getEntityContent(HttpEntity entity) throws UnsupportedOperationException, IOException {
 
-		BufferedReader buffReader = null;
 		StringBuffer stringBuffer = new StringBuffer();
 
-		try {
-			buffReader = new BufferedReader(new InputStreamReader(entity.getContent()));
+		BufferedReader buffReader = new BufferedReader(new InputStreamReader(entity.getContent()));
 
-			String inputLine;
-			while ((inputLine = buffReader.readLine()) != null) {
-				stringBuffer.append(inputLine);
-			}
-			EntityUtils.consume(entity);
-
-		} catch (UnsupportedOperationException | IOException e) {
-
-			e.printStackTrace();
-			throw new BackendGatewayException(e.getMessage(), e);
-
-		} finally {
-			if (buffReader != null) {
-				try {
-					buffReader.close();
-				} catch (IOException ex) {
-					log.warn(ex.getMessage());
-				}
-			}
+		String inputLine;
+		while ((inputLine = buffReader.readLine()) != null) {
+			stringBuffer.append(inputLine);
 		}
+		EntityUtils.consume(entity);
+
+		buffReader.close();
 
 		log.debug("Response content: {}", stringBuffer.toString());
 
 		ObjectMapper mapper = new ObjectMapper();
-		try {
-
-			return mapper.readValue(stringBuffer.toString().getBytes(), StoRIMetadata.class);
-
-		} catch (IOException e) {
-
-			e.printStackTrace();
-			throw new BackendGatewayException(e.getMessage(), e);
-		}
+		return mapper.readValue(stringBuffer.toString().getBytes(), StoRIMetadata.class);
 	}
 }

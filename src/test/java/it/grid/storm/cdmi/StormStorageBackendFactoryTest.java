@@ -3,6 +3,7 @@ package it.grid.storm.cdmi;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -25,10 +26,21 @@ public class StormStorageBackendFactoryTest {
 	private void setConfigFileProperty() {
 
 		ClassLoader classLoader = getClass().getClassLoader();
-		System.setProperty("storm.configFile", classLoader.getResource("storm-properties.json").getFile());
+		setConfigFileProperty(classLoader.getResource("storm-properties.json").getFile());
+	}
+
+	private void setConfigFileProperty(String value) {
+
+		System.setProperty("storm.configFile", value);
 	}
 
 	private void setCapabilitiesFileProperty() {
+
+		ClassLoader classLoader = getClass().getClassLoader();
+		setCapabilitiesFileProperty(classLoader.getResource("storm-capabilities.json").getFile());
+	}
+
+	private void setCapabilitiesFileProperty(String value) {
 
 		ClassLoader classLoader = getClass().getClassLoader();
 		System.setProperty("storm.capabilitiesFile",
@@ -61,6 +73,16 @@ public class StormStorageBackendFactoryTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void createStorageBackendNullConfigFile() {
 
+		setCapabilitiesFileProperty();
+
+		StorageBackendFactory factory = new StormStorageBackendFactory();
+		factory.createStorageBackend(EMPTY_ARGS);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void createStorageBackendNotFoundConfigFile() {
+
+		setConfigFileProperty("/path/to/invalid/storm-properties.json");
 		setCapabilitiesFileProperty();
 
 		StorageBackendFactory factory = new StormStorageBackendFactory();
