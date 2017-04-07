@@ -85,36 +85,6 @@ public class StoRIMetadata {
 		return children;
 	}
 
-
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((absolutePath == null) ? 0 : absolutePath.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		StoRIMetadata other = (StoRIMetadata) obj;
-		if (absolutePath == null) {
-			if (other.absolutePath != null)
-				return false;
-		} else if (!absolutePath.equals(other.absolutePath))
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
-
 	public static Builder builder() {
 		return new Builder();
 	}

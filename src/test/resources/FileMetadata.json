@@ -1,0 +1,15 @@
+{
+  "lastModified": "2017-03-09 16:40 PM UTC",
+  "attributes": {
+    "premigrated": false,
+    "migrated": true,
+    "pinned": false
+  },
+  "filesystem": {
+    "root": "/storage/test.vo",
+    "name": "TESTVO-FS"
+  },
+  "status": "ONLINE",
+  "type": "FILE",
+  "absolutePath": "/storage/test.vo/test.txt"
+}

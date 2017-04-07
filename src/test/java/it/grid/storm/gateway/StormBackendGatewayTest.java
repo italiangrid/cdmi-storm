@@ -89,7 +89,8 @@ public class StormBackendGatewayTest {
 		HttpClient client = getHttpClientSuccess(meta);
 		BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
 		StoRIMetadata metaOut = gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
-		assertThat(metaOut, equalTo(meta));
+		assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
+		assertThat(metaOut.getType(), equalTo(meta.getType()));
 	}
 
 	@Test
@@ -104,7 +105,8 @@ public class StormBackendGatewayTest {
 		BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
 		StoRIMetadata metaOut =
 				gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH.substring(1));
-		assertThat(metaOut, equalTo(meta));
+		assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
+		assertThat(metaOut.getType(), equalTo(meta.getType()));
 	}
 
 	@Test(expected = BackendGatewayException.class)
