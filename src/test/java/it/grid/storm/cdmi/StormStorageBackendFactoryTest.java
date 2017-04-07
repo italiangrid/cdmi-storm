@@ -3,7 +3,6 @@ package it.grid.storm.cdmi;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -14,8 +13,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import it.grid.storm.cdmi.StormStorageBackendFactory;
 
 public class StormStorageBackendFactoryTest {
 
