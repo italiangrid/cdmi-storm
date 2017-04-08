@@ -6,9 +6,9 @@ import org.junit.Test;
 
 public class UtilsTest {
 
-	@Test
-	public void uselessTest() {
+  @Test
+  public void uselessTest() {
 
-		assertNotNull(new Utils());
-	}
+    assertNotNull(new Utils());
+  }
 }

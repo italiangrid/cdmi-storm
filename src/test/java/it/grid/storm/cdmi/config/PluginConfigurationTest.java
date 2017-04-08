@@ -16,40 +16,40 @@ import it.grid.storm.cdmi.Utils;
 
 public class PluginConfigurationTest {
 
-	private static final Logger log = LoggerFactory.getLogger(PluginConfigurationTest.class);
+  private static final Logger log = LoggerFactory.getLogger(PluginConfigurationTest.class);
 
-	private PluginConfiguration getPluginConfiguration(ClassLoader classLoader) throws IOException {
+  private PluginConfiguration getPluginConfiguration(ClassLoader classLoader) throws IOException {
 
-		String filePath = classLoader.getResource("storm-properties.json").getFile();
-		PluginConfiguration conf = Utils.loadObjectFromJsonFile(filePath, PluginConfiguration.class);
-		return conf;
-	}
+    String filePath = classLoader.getResource("storm-properties.json").getFile();
+    PluginConfiguration conf = Utils.loadObjectFromJsonFile(filePath, PluginConfiguration.class);
+    return conf;
+  }
 
-	@Test
-	public void testLoadFromFile() throws IOException {
+  @Test
+  public void testLoadFromFile() throws IOException {
 
-		ClassLoader classLoader = getClass().getClassLoader();
+    ClassLoader classLoader = getClass().getClassLoader();
 
-		PluginConfiguration pc = getPluginConfiguration(classLoader);
-		assertThat(pc.getBackend().getHostname(), equalTo("test-hostname.local.io"));
-		assertThat(pc.getBackend().getPort(), equalTo(9998));
-		assertThat(pc.getBackend().getToken(), equalTo("testtoken"));
-		assertThat(pc.getVos().size(), equalTo(1));
-		assertThat(pc.getVos().get(0).getName(), equalTo("test.vo"));
-		assertThat(pc.getVos().get(0).getRoots().size(), equalTo(1));
-		assertThat(pc.getVos().get(0).getRoots().get(0), equalTo("/test.vo"));
-		log.info(pc.toString());
-	}
+    PluginConfiguration pc = getPluginConfiguration(classLoader);
+    assertThat(pc.getBackend().getHostname(), equalTo("test-hostname.local.io"));
+    assertThat(pc.getBackend().getPort(), equalTo(9998));
+    assertThat(pc.getBackend().getToken(), equalTo("testtoken"));
+    assertThat(pc.getVos().size(), equalTo(1));
+    assertThat(pc.getVos().get(0).getName(), equalTo("test.vo"));
+    assertThat(pc.getVos().get(0).getRoots().size(), equalTo(1));
+    assertThat(pc.getVos().get(0).getRoots().get(0), equalTo("/test.vo"));
+    log.info(pc.toString());
+  }
 
-	@Test
-	public void testLoadNotFoundPropertiesFile() throws IOException {
+  @Test
+  public void testLoadNotFoundPropertiesFile() throws IOException {
 
-		try {
-			loadObjectFromJsonFile("/this/is/not/a/path/to/storm.properties", PluginConfiguration.class);
-			Assert.fail();
-		} catch (FileNotFoundException e) {
-			assertThat(e.getClass(), equalTo(FileNotFoundException.class));
-		}
-	}
+    try {
+      loadObjectFromJsonFile("/this/is/not/a/path/to/storm.properties", PluginConfiguration.class);
+      Assert.fail();
+    } catch (FileNotFoundException e) {
+      assertThat(e.getClass(), equalTo(FileNotFoundException.class));
+    }
+  }
 
 }

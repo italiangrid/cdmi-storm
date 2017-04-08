@@ -70,18 +70,15 @@ public class StormCapabilitiesTest {
     String jsonFile = getClass().getClassLoader().getResource("storm-capabilities.json").getFile();
 
     ObjectMapper mapper = new ObjectMapper();
-    StormCapabilities cap =
-        mapper.readValue(new File(jsonFile), StormCapabilities.class);
+    StormCapabilities cap = mapper.readValue(new File(jsonFile), StormCapabilities.class);
 
     log.debug("CdmiCapabilitiesConfiguration: {}", cap);
 
     for (String key : cap.getContainerCapabilities().keySet()) {
-      assertThat(cap.getContainerCapabilities().get(key),
-          equalTo(containerCapsMap.get(key)));
+      assertThat(cap.getContainerCapabilities().get(key), equalTo(containerCapsMap.get(key)));
     }
     for (String key : cap.getDataobjectCapabilities().keySet()) {
-      assertThat(cap.getDataobjectCapabilities().get(key),
-          equalTo(dataobjectCapsMap.get(key)));
+      assertThat(cap.getDataobjectCapabilities().get(key), equalTo(dataobjectCapsMap.get(key)));
     }
   }
 

@@ -25,104 +25,105 @@ import it.grid.storm.rest.metadata.model.StoRIMetadata;
 
 public class StormBackendGateway implements BackendGateway {
 
-	private static final Logger log = LoggerFactory.getLogger(StormBackendGateway.class);
+  private static final Logger log = LoggerFactory.getLogger(StormBackendGateway.class);
 
-	private HttpClient httpclient;
-	private String hostname;
-	private int port;
-	private String token;
+  private HttpClient httpclient;
+  private String hostname;
+  private int port;
+  private String token;
 
-	public StormBackendGateway(HttpClient httpclient, String hostname, int port, String token) {
+  public StormBackendGateway(HttpClient httpclient, String hostname, int port, String token) {
 
-		Preconditions.checkNotNull(httpclient, "Invalid null httpclient");
-		Preconditions.checkNotNull(hostname, "Invalid null hostname");
-		this.httpclient = httpclient;
-		this.hostname = hostname;
-		this.port = port;
-		this.token = token;
-	}
+    Preconditions.checkNotNull(httpclient, "Invalid null httpclient");
+    Preconditions.checkNotNull(hostname, "Invalid null hostname");
+    this.httpclient = httpclient;
+    this.hostname = hostname;
+    this.port = port;
+    this.token = token;
+  }
 
-	public StormBackendGateway(String hostname, int port, String token) {
+  public StormBackendGateway(String hostname, int port, String token) {
 
-		this(HttpClients.createDefault(), hostname, port, token);
-	}
+    this(HttpClients.createDefault(), hostname, port, token);
+  }
 
-	@Override
-	public StoRIMetadata getStoRIMetadata(User user, String path) throws BackendGatewayException {
+  @Override
+  public StoRIMetadata getStoRIMetadata(User user, String path) throws BackendGatewayException {
 
-		log.info("GET {} as {}", path, user.getId());
+    log.info("GET {} as {}", path, user.getId());
 
-		String url = buildMetadataURL(path);
-		log.debug("Metadata URL: {}", url);
+    String url = buildMetadataURL(path);
+    log.debug("Metadata URL: {}", url);
 
-		HttpResponse response = doHttpGet(url);
-		log.info(response.getStatusLine().toString());
+    HttpResponse response = doHttpGet(url);
+    log.info(response.getStatusLine().toString());
 
-		if (response.getStatusLine().getStatusCode() == 200) {
-			StoRIMetadata storiMetadata;
-			try {
-				storiMetadata = getEntityContent(response.getEntity());
-			} catch (UnsupportedOperationException | IOException e) {
-				log.error(e.getMessage());
-				throw new BackendGatewayException(e.getMessage(), e);
-			}
-			log.debug("Response entity: {}", storiMetadata);
-			return storiMetadata;
-		}
-		throw new BackendGatewayException(response.getStatusLine().toString());
-	}
+    if (response.getStatusLine().getStatusCode() == 200) {
+      StoRIMetadata storiMetadata;
+      try {
+        storiMetadata = getEntityContent(response.getEntity());
+      } catch (UnsupportedOperationException | IOException e) {
+        log.error(e.getMessage());
+        throw new BackendGatewayException(e.getMessage(), e);
+      }
+      log.debug("Response entity: {}", storiMetadata);
+      return storiMetadata;
+    }
+    throw new BackendGatewayException(response.getStatusLine().toString());
+  }
 
-	@Override
-	public void addRecallTask(User user, String filepath) {
-		// TODO Auto-generated method stub
+  @Override
+  public void addRecallTask(User user, String filepath) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	private String buildMetadataURL(String path) {
+  private String buildMetadataURL(String path) {
 
-		String pattern = "http://%s:%d/metadata/%s";
-		if (path.startsWith("/")) {
-			path = path.substring(1);
-		}
-		log.debug("build metadata URL for path {}", path);
-		return String.format(pattern, hostname, port, path);
-	}
+    String pattern = "http://%s:%d/metadata/%s";
+    if (path.startsWith("/")) {
+      path = path.substring(1);
+    }
+    log.debug("build metadata URL for path {}", path);
+    return String.format(pattern, hostname, port, path);
+  }
 
-	private HttpResponse doHttpGet(String url) throws BackendGatewayException {
+  private HttpResponse doHttpGet(String url) throws BackendGatewayException {
 
-		HttpGet httpGet = new HttpGet(url);
-		Header authorizationHeader = new BasicHeader("Token", token);
-		httpGet.addHeader(authorizationHeader);
+    HttpGet httpGet = new HttpGet(url);
+    Header authorizationHeader = new BasicHeader("Token", token);
+    httpGet.addHeader(authorizationHeader);
 
-		HttpResponse response = null;
+    HttpResponse response = null;
 
-		try {
-			response = httpclient.execute(httpGet);
-		} catch (IOException e) {
-			log.error(e.getMessage());
-			throw new BackendGatewayException(e.getMessage(), e);
-		}
+    try {
+      response = httpclient.execute(httpGet);
+    } catch (IOException e) {
+      log.error(e.getMessage());
+      throw new BackendGatewayException(e.getMessage(), e);
+    }
 
-		return response;
-	}
+    return response;
+  }
 
-	private StoRIMetadata getEntityContent(HttpEntity entity) throws UnsupportedOperationException, IOException {
+  private StoRIMetadata getEntityContent(HttpEntity entity)
+      throws UnsupportedOperationException, IOException {
 
-		StringBuffer stringBuffer = new StringBuffer();
+    StringBuffer stringBuffer = new StringBuffer();
 
-		BufferedReader buffReader = new BufferedReader(new InputStreamReader(entity.getContent()));
+    BufferedReader buffReader = new BufferedReader(new InputStreamReader(entity.getContent()));
 
-		String inputLine;
-		while ((inputLine = buffReader.readLine()) != null) {
-			stringBuffer.append(inputLine);
-		}
-		EntityUtils.consume(entity);
+    String inputLine;
+    while ((inputLine = buffReader.readLine()) != null) {
+      stringBuffer.append(inputLine);
+    }
+    EntityUtils.consume(entity);
 
-		buffReader.close();
+    buffReader.close();
 
-		log.debug("Response content: {}", stringBuffer.toString());
+    log.debug("Response content: {}", stringBuffer.toString());
 
-		ObjectMapper mapper = new ObjectMapper();
-		return mapper.readValue(stringBuffer.toString().getBytes(), StoRIMetadata.class);
-	}
+    ObjectMapper mapper = new ObjectMapper();
+    return mapper.readValue(stringBuffer.toString().getBytes(), StoRIMetadata.class);
+  }
 }

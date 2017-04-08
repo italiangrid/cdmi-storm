@@ -8,25 +8,25 @@ import org.indigo.cdmi.spi.StorageBackendFactory;
 
 public class StormStorageBackendFactory implements StorageBackendFactory {
 
-	public static final String type = "storm";
-	public static final String description = "StoRM Storage Backend CDMI module";
+  public static final String type = "storm";
+  public static final String description = "StoRM Storage Backend CDMI module";
 
-	@Override
-	public StorageBackend createStorageBackend(Map<String, String> args)
-			throws IllegalArgumentException {
+  @Override
+  public StorageBackend createStorageBackend(Map<String, String> args)
+      throws IllegalArgumentException {
 
-		return new SubjectBasedStorageBackend(new StormStorageBackend());
-	}
+    return new SubjectBasedStorageBackend(new StormStorageBackend());
+  }
 
-	@Override
-	public String getDescription() {
+  @Override
+  public String getDescription() {
 
-		return description;
-	}
+    return description;
+  }
 
-	@Override
-	public String getType() {
+  @Override
+  public String getType() {
 
-		return type;
-	}
+    return type;
+  }
 }

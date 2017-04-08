@@ -29,101 +29,101 @@ import it.grid.storm.rest.metadata.model.StoRIMetadata;
 
 public class StormBackendGatewayTest {
 
-	private final static String FILE_STFN_PATH = "/metadata/test.vo/test.txt";
-	private final static String FILE_ABSOLUTE_PATH = "/tmp/test.vo/test.txt";
+  private final static String FILE_STFN_PATH = "/metadata/test.vo/test.txt";
+  private final static String FILE_ABSOLUTE_PATH = "/tmp/test.vo/test.txt";
 
-	private final static String HOSTNAME = "dev.local.io";
-	private final static int PORT = 9998;
-	private final static String TOKEN = "MY_SECRET_TOKEN";
+  private final static String HOSTNAME = "dev.local.io";
+  private final static int PORT = 9998;
+  private final static String TOKEN = "MY_SECRET_TOKEN";
 
-	private HttpClient getHttpClient() {
-		HttpClient client = Mockito.mock(HttpClient.class);
-		return client;
-	}
+  private HttpClient getHttpClient() {
+    HttpClient client = Mockito.mock(HttpClient.class);
+    return client;
+  }
 
-	private HttpResponse getSuccessGetMetadataResponse(StoRIMetadata meta)
-			throws UnsupportedEncodingException, JsonProcessingException {
+  private HttpResponse getSuccessGetMetadataResponse(StoRIMetadata meta)
+      throws UnsupportedEncodingException, JsonProcessingException {
 
-		ObjectMapper mapper = new ObjectMapper();
-		HttpResponse response = getResponse(200, "Ok");
-		response.setEntity(new StringEntity(mapper.writeValueAsString(meta)));
-		return response;
-	}
+    ObjectMapper mapper = new ObjectMapper();
+    HttpResponse response = getResponse(200, "Ok");
+    response.setEntity(new StringEntity(mapper.writeValueAsString(meta)));
+    return response;
+  }
 
-	private HttpClient getHttpClientSuccess(StoRIMetadata meta)
-			throws ClientProtocolException, IOException {
+  private HttpClient getHttpClientSuccess(StoRIMetadata meta)
+      throws ClientProtocolException, IOException {
 
-		HttpClient client = getHttpClient();
-		HttpResponse response = getSuccessGetMetadataResponse(meta);
-		Mockito.when(client.execute(Mockito.any(HttpGet.class))).thenReturn(response);
-		return client;
-	}
+    HttpClient client = getHttpClient();
+    HttpResponse response = getSuccessGetMetadataResponse(meta);
+    Mockito.when(client.execute(Mockito.any(HttpGet.class))).thenReturn(response);
+    return client;
+  }
 
-	private HttpResponse getResponse(int statusCode, String reasonPhrase) {
-		return new BasicHttpResponse(new BasicStatusLine(HTTP_1_1, statusCode, reasonPhrase));
-	}
+  private HttpResponse getResponse(int statusCode, String reasonPhrase) {
+    return new BasicHttpResponse(new BasicStatusLine(HTTP_1_1, statusCode, reasonPhrase));
+  }
 
-	private HttpClient getHttpClientNotFoundResponse() throws ClientProtocolException, IOException {
+  private HttpClient getHttpClientNotFoundResponse() throws ClientProtocolException, IOException {
 
-		HttpClient client = getHttpClient();
-		HttpResponse response = getResponse(404, "Not Found");
-		Mockito.when(client.execute(Mockito.any(HttpGet.class))).thenReturn(response);
-		return client;
-	}
+    HttpClient client = getHttpClient();
+    HttpResponse response = getResponse(404, "Not Found");
+    Mockito.when(client.execute(Mockito.any(HttpGet.class))).thenReturn(response);
+    return client;
+  }
 
-	private HttpClient getHttpClientIOException() throws ClientProtocolException, IOException {
+  private HttpClient getHttpClientIOException() throws ClientProtocolException, IOException {
 
-		HttpClient client = getHttpClient();
-		Mockito.when(client.execute(Mockito.any(HttpGet.class)))
-			.thenThrow(new IOException("not found"));
-		return client;
-	}
+    HttpClient client = getHttpClient();
+    Mockito.when(client.execute(Mockito.any(HttpGet.class)))
+        .thenThrow(new IOException("not found"));
+    return client;
+  }
 
-	@Test
-	public void testSuccessfulGetFileMetadata() throws ClientProtocolException, IOException {
+  @Test
+  public void testSuccessfulGetFileMetadata() throws ClientProtocolException, IOException {
 
-		StoRIMetadata meta = StoRIMetadata.builder()
-			.absolutePath(FILE_ABSOLUTE_PATH)
-			.attributes(FileAttributes.builder().migrated(false).pinned(false).premigrated(false).build())
-			.build();
-		HttpClient client = getHttpClientSuccess(meta);
-		BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
-		StoRIMetadata metaOut = gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
-		assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
-		assertThat(metaOut.getType(), equalTo(meta.getType()));
-	}
+    StoRIMetadata meta = StoRIMetadata.builder().absolutePath(FILE_ABSOLUTE_PATH)
+        .attributes(
+            FileAttributes.builder().migrated(false).pinned(false).premigrated(false).build())
+        .build();
+    HttpClient client = getHttpClientSuccess(meta);
+    BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
+    StoRIMetadata metaOut = gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
+    assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
+    assertThat(metaOut.getType(), equalTo(meta.getType()));
+  }
 
-	@Test
-	public void testSuccessfulGetFileMetadataStfnNoFirstSlash()
-			throws ClientProtocolException, IOException {
+  @Test
+  public void testSuccessfulGetFileMetadataStfnNoFirstSlash()
+      throws ClientProtocolException, IOException {
 
-		StoRIMetadata meta = StoRIMetadata.builder()
-			.absolutePath(FILE_ABSOLUTE_PATH)
-			.attributes(FileAttributes.builder().migrated(false).pinned(false).premigrated(false).build())
-			.build();
-		HttpClient client = getHttpClientSuccess(meta);
-		BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
-		StoRIMetadata metaOut =
-				gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH.substring(1));
-		assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
-		assertThat(metaOut.getType(), equalTo(meta.getType()));
-	}
+    StoRIMetadata meta = StoRIMetadata.builder().absolutePath(FILE_ABSOLUTE_PATH)
+        .attributes(
+            FileAttributes.builder().migrated(false).pinned(false).premigrated(false).build())
+        .build();
+    HttpClient client = getHttpClientSuccess(meta);
+    BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
+    StoRIMetadata metaOut =
+        gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH.substring(1));
+    assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
+    assertThat(metaOut.getType(), equalTo(meta.getType()));
+  }
 
-	@Test(expected = BackendGatewayException.class)
-	public void testSuccessfulGetMetadataNotFound() throws ClientProtocolException, IOException {
+  @Test(expected = BackendGatewayException.class)
+  public void testSuccessfulGetMetadataNotFound() throws ClientProtocolException, IOException {
 
 
-		HttpClient client = getHttpClientNotFoundResponse();
-		BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
-		gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
-	}
+    HttpClient client = getHttpClientNotFoundResponse();
+    BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
+    gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
+  }
 
-	@Test(expected = BackendGatewayException.class)
-	public void testGetMetadataIOException() throws ClientProtocolException, IOException {
+  @Test(expected = BackendGatewayException.class)
+  public void testGetMetadataIOException() throws ClientProtocolException, IOException {
 
-		HttpClient client = getHttpClientIOException();
-		BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
-		gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
-	}
+    HttpClient client = getHttpClientIOException();
+    BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
+    gateway.getStoRIMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
+  }
 
 }
