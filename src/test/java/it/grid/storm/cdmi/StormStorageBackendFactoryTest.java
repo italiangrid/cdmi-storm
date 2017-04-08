@@ -87,6 +87,17 @@ public class StormStorageBackendFactoryTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
+	public void createStorageBackendEmptyConfigFile() {
+
+		ClassLoader classLoader = getClass().getClassLoader();
+		setConfigFileProperty(classLoader.getResource("empty-properties.json").getFile());
+		setCapabilitiesFileProperty();
+
+		StorageBackendFactory factory = new StormStorageBackendFactory();
+		factory.createStorageBackend(EMPTY_ARGS);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
 	public void createStorageBackendNullCapabilitiesFile() {
 
 		setConfigFileProperty();
