@@ -1,10 +1,10 @@
 package it.grid.storm.gateway.model;
 
-import it.grid.storm.rest.metadata.model.StoRIMetadata;
+import it.grid.storm.rest.metadata.model.StoriMetadata;
 
 public interface BackendGateway {
 
-  public StoRIMetadata getStoRIMetadata(User user, String stfnPath) throws BackendGatewayException;
+  public StoriMetadata getStoriMetadata(User user, String stfnPath) throws BackendGatewayException;
 
   public void addRecallTask(User user, String stfnPath) throws BackendGatewayException;
 

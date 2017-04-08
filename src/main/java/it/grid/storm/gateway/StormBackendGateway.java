@@ -1,5 +1,13 @@
 package it.grid.storm.gateway;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
+
+import it.grid.storm.gateway.model.BackendGateway;
+import it.grid.storm.gateway.model.BackendGatewayException;
+import it.grid.storm.gateway.model.User;
+import it.grid.storm.rest.metadata.model.StoriMetadata;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,14 +23,6 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
-
-import it.grid.storm.gateway.model.BackendGateway;
-import it.grid.storm.gateway.model.BackendGatewayException;
-import it.grid.storm.gateway.model.User;
-import it.grid.storm.rest.metadata.model.StoRIMetadata;
-
 public class StormBackendGateway implements BackendGateway {
 
   private static final Logger log = LoggerFactory.getLogger(StormBackendGateway.class);
@@ -32,6 +32,14 @@ public class StormBackendGateway implements BackendGateway {
   private int port;
   private String token;
 
+  /**
+   * Constructor.
+   * 
+   * @param httpclient The HTTP client that will be used to contact StoRM Back-end.
+   * @param hostname The host-name of StoRM Back-end.
+   * @param port The port used by StoRM Back-end REST service.
+   * @param token The token needed for authentication.
+   */
   public StormBackendGateway(HttpClient httpclient, String hostname, int port, String token) {
 
     Preconditions.checkNotNull(httpclient, "Invalid null httpclient");
@@ -48,18 +56,18 @@ public class StormBackendGateway implements BackendGateway {
   }
 
   @Override
-  public StoRIMetadata getStoRIMetadata(User user, String path) throws BackendGatewayException {
+  public StoriMetadata getStoriMetadata(User user, String path) throws BackendGatewayException {
 
     log.info("GET {} as {}", path, user.getId());
 
-    String url = buildMetadataURL(path);
+    String url = buildMetadataUrl(path);
     log.debug("Metadata URL: {}", url);
 
     HttpResponse response = doHttpGet(url);
     log.info(response.getStatusLine().toString());
 
     if (response.getStatusLine().getStatusCode() == 200) {
-      StoRIMetadata storiMetadata;
+      StoriMetadata storiMetadata;
       try {
         storiMetadata = getEntityContent(response.getEntity());
       } catch (UnsupportedOperationException | IOException e) {
@@ -78,7 +86,7 @@ public class StormBackendGateway implements BackendGateway {
 
   }
 
-  private String buildMetadataURL(String path) {
+  private String buildMetadataUrl(String path) {
 
     String pattern = "http://%s:%d/metadata/%s";
     if (path.startsWith("/")) {
@@ -106,7 +114,7 @@ public class StormBackendGateway implements BackendGateway {
     return response;
   }
 
-  private StoRIMetadata getEntityContent(HttpEntity entity)
+  private StoriMetadata getEntityContent(HttpEntity entity)
       throws UnsupportedOperationException, IOException {
 
     StringBuffer stringBuffer = new StringBuffer();
@@ -124,6 +132,6 @@ public class StormBackendGateway implements BackendGateway {
     log.debug("Response content: {}", stringBuffer.toString());
 
     ObjectMapper mapper = new ObjectMapper();
-    return mapper.readValue(stringBuffer.toString().getBytes(), StoRIMetadata.class);
+    return mapper.readValue(stringBuffer.toString().getBytes(), StoriMetadata.class);
   }
 }

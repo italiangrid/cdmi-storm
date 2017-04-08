@@ -12,23 +12,34 @@ public class FileAttributes {
   private final Boolean migrated;
   private final Boolean premigrated;
   private final String checksum;
-  private final Long TSMRecD;
-  private final Integer TSMRecR;
-  private final String TSMRecT;
+  private final Long tsmRecD;
+  private final Integer tsmRecR;
+  private final String tsmRecT;
 
+  /**
+   * Constructor with parameters.
+   * 
+   * @param pinned Is file pinned.
+   * @param migrated Is file migrated to tape.
+   * @param premigrated Is file only on disk and needs to be migrated to tape.
+   * @param checksum The Adler32 checksum value
+   * @param tsmRecD The recall date
+   * @param tsmRecR The recall number or max retry
+   * @param tsmRecT The recall tasks queued
+   */
   @JsonCreator
   public FileAttributes(@JsonProperty("pinned") Boolean pinned,
       @JsonProperty("migrated") Boolean migrated, @JsonProperty("premigrated") Boolean premigrated,
-      @JsonProperty("checksum") String checksum, @JsonProperty("TSMRecD") Long TSMRecD,
-      @JsonProperty("TSMRecR") Integer TSMRecR, @JsonProperty("TSMRecT") String TSMRecT) {
+      @JsonProperty("checksum") String checksum, @JsonProperty("TSMRecD") Long tsmRecD,
+      @JsonProperty("TSMRecR") Integer tsmRecR, @JsonProperty("TSMRecT") String tsmRecT) {
 
     this.pinned = pinned;
     this.migrated = migrated;
     this.premigrated = premigrated;
     this.checksum = checksum;
-    this.TSMRecD = TSMRecD;
-    this.TSMRecR = TSMRecR;
-    this.TSMRecT = TSMRecT;
+    this.tsmRecD = tsmRecD;
+    this.tsmRecR = tsmRecR;
+    this.tsmRecT = tsmRecT;
   }
 
   public Boolean getPinned() {
@@ -47,27 +58,32 @@ public class FileAttributes {
     return checksum;
   }
 
-  public Long getTSMRecD() {
-    return TSMRecD;
+  public Long getTsmRecD() {
+    return tsmRecD;
   }
 
-  public Integer getTSMRecR() {
-    return TSMRecR;
+  public Integer getTsmRecR() {
+    return tsmRecR;
   }
 
-  public String getTSMRecT() {
-    return TSMRecT;
+  public String getTsmRecT() {
+    return tsmRecT;
   }
 
+  /**
+   * Constructor through the builder.
+   * 
+   * @param builder The @FileAttributes.Builder instance.
+   */
   public FileAttributes(Builder builder) {
 
     this.pinned = builder.pinned;
     this.migrated = builder.migrated;
     this.premigrated = builder.premigrated;
     this.checksum = builder.checksum;
-    this.TSMRecD = builder.TSMRecD;
-    this.TSMRecR = builder.TSMRecR;
-    this.TSMRecT = builder.TSMRecT;
+    this.tsmRecD = builder.tsmRecD;
+    this.tsmRecR = builder.tsmRecR;
+    this.tsmRecT = builder.tsmRecT;
   }
 
   public static Builder builder() {
@@ -80,9 +96,9 @@ public class FileAttributes {
     private Boolean migrated;
     private Boolean premigrated;
     private String checksum;
-    private Long TSMRecD;
-    private Integer TSMRecR;
-    private String TSMRecT;
+    private Long tsmRecD;
+    private Integer tsmRecR;
+    private String tsmRecT;
 
     public Builder pinned(Boolean pinned) {
       this.pinned = pinned;
@@ -104,18 +120,18 @@ public class FileAttributes {
       return this;
     }
 
-    public Builder TSMRecD(Long TSMRecD) {
-      this.TSMRecD = TSMRecD;
+    public Builder tsmRecD(Long tsmRecD) {
+      this.tsmRecD = tsmRecD;
       return this;
     }
 
-    public Builder TSMRecR(Integer TSMRecR) {
-      this.TSMRecR = TSMRecR;
+    public Builder tsmRecR(Integer tsmRecR) {
+      this.tsmRecR = tsmRecR;
       return this;
     }
 
-    public Builder TSMRecT(String TSMRecT) {
-      this.TSMRecT = TSMRecT;
+    public Builder tsmRecT(String tsmRecT) {
+      this.tsmRecT = tsmRecT;
       return this;
     }
 

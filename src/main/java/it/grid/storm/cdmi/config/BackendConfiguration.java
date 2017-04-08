@@ -12,6 +12,13 @@ public class BackendConfiguration {
   private Integer port;
   private String token;
 
+  /**
+   * Constructor.
+   * 
+   * @param hostname The StoRM Back-end host-name.
+   * @param port The port where REST service is listening.
+   * @param token The token needed to authenticate.
+   */
   @JsonCreator
   public BackendConfiguration(@JsonProperty("hostname") String hostname,
       @JsonProperty("port") Integer port, @JsonProperty("token") String token) {

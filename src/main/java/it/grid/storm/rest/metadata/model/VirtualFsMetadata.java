@@ -6,18 +6,18 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_EMPTY)
-public class VirtualFSMetadata {
+public class VirtualFsMetadata {
 
   private final String name;
   private final String root;
 
   @JsonCreator
-  private VirtualFSMetadata(@JsonProperty("name") String name, @JsonProperty("root") String root) {
+  private VirtualFsMetadata(@JsonProperty("name") String name, @JsonProperty("root") String root) {
     this.name = name;
     this.root = root;
   }
 
-  private VirtualFSMetadata(Builder builder) {
+  private VirtualFsMetadata(Builder builder) {
     this.name = builder.name;
     this.root = builder.root;
   }
@@ -49,8 +49,8 @@ public class VirtualFSMetadata {
       return this;
     }
 
-    public VirtualFSMetadata build() {
-      return new VirtualFSMetadata(this);
+    public VirtualFsMetadata build() {
+      return new VirtualFsMetadata(this);
     }
   }
 }

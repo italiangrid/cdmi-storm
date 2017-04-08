@@ -1,27 +1,27 @@
 package it.grid.storm.rest.metadata.model;
 
-import java.util.Date;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+import java.util.List;
+
 @JsonInclude(Include.NON_EMPTY)
-public class StoRIMetadata {
+public class StoriMetadata {
 
   public enum ResourceType {
     FILE, FOLDER
-  };
+  }
 
   public enum ResourceStatus {
     ONLINE, NEARLINE
-  };
+  }
 
   private String absolutePath;
-  private VirtualFSMetadata filesystem;
+  private VirtualFsMetadata filesystem;
   private ResourceType type;
   private ResourceStatus status;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
@@ -31,10 +31,21 @@ public class StoRIMetadata {
 
   private FileAttributes attributes;
 
+  /**
+   * Constructor with params.
+   * 
+   * @param absolutePath The absolute path of the resource
+   * @param type The resource type: FILE or FOLDER
+   * @param status The status of the resource in order of latency: ONLINE or NEARLINE
+   * @param filesystem The info about the file-system
+   * @param attributes In case of FILE, the extended file attributes
+   * @param lastModified The @Date of last update
+   * @param children In case of FOLDER, the list of children
+   */
   @JsonCreator
-  public StoRIMetadata(@JsonProperty("absolutePath") String absolutePath,
+  public StoriMetadata(@JsonProperty("absolutePath") String absolutePath,
       @JsonProperty("type") ResourceType type, @JsonProperty("status") ResourceStatus status,
-      @JsonProperty("filesystem") VirtualFSMetadata filesystem,
+      @JsonProperty("filesystem") VirtualFsMetadata filesystem,
       @JsonProperty("attributes") FileAttributes attributes,
       @JsonProperty("lastModified") Date lastModified,
       @JsonProperty("children") List<String> children) {
@@ -47,7 +58,12 @@ public class StoRIMetadata {
     this.children = children;
   }
 
-  public StoRIMetadata(Builder builder) {
+  /**
+   * Constructor through the builder.
+   * 
+   * @param builder The @StoriMetadata.Builder instance.
+   */
+  private StoriMetadata(Builder builder) {
     this.absolutePath = builder.absolutePath;
     this.type = builder.type;
     this.status = builder.status;
@@ -69,7 +85,7 @@ public class StoRIMetadata {
     return status;
   }
 
-  public VirtualFSMetadata getFilesystem() {
+  public VirtualFsMetadata getFilesystem() {
     return filesystem;
   }
 
@@ -95,7 +111,7 @@ public class StoRIMetadata {
     private String absolutePath;
     private ResourceType type;
     private ResourceStatus status;
-    private VirtualFSMetadata filesystem;
+    private VirtualFsMetadata filesystem;
     private FileAttributes attributes;
     private List<String> children;
 
@@ -114,7 +130,7 @@ public class StoRIMetadata {
       return this;
     }
 
-    public Builder filesystem(VirtualFSMetadata filesystem) {
+    public Builder filesystem(VirtualFsMetadata filesystem) {
       this.filesystem = filesystem;
       return this;
     }
@@ -134,8 +150,8 @@ public class StoRIMetadata {
       return this;
     }
 
-    public StoRIMetadata build() {
-      return new StoRIMetadata(this);
+    public StoriMetadata build() {
+      return new StoriMetadata(this);
     }
   }
 }

@@ -106,6 +106,9 @@ public class StormStorageBackendFactoryTest {
     factory.createStorageBackend(EMPTY_ARGS);
   }
 
+  /**
+   * Reset system properties used by all the tests.
+   */
   @After
   public void removeSystemProperties() {
 

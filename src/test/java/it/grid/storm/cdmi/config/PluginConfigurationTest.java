@@ -1,8 +1,11 @@
 package it.grid.storm.cdmi.config;
 
 import static it.grid.storm.cdmi.Utils.loadObjectFromJsonFile;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+
+import it.grid.storm.cdmi.Utils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,8 +14,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import it.grid.storm.cdmi.Utils;
 
 public class PluginConfigurationTest {
 

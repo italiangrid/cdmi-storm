@@ -1,20 +1,26 @@
 package it.grid.storm.cdmi.config;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 @JsonInclude(Include.NON_EMPTY)
-public class VOConfiguration {
+public class VoConfiguration {
 
   private String name;
   private List<String> roots;
 
+  /**
+   * Constructor.
+   * 
+   * @param name Virtual File-system name.
+   * @param roots The list of access points.
+   */
   @JsonCreator
-  public VOConfiguration(@JsonProperty("name") String name,
+  public VoConfiguration(@JsonProperty("name") String name,
       @JsonProperty("roots") List<String> roots) {
 
     this.name = name;

@@ -1,21 +1,27 @@
 package it.grid.storm.cdmi.config;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 @JsonInclude(Include.NON_EMPTY)
 public class PluginConfiguration {
 
   private BackendConfiguration backend;
-  private List<VOConfiguration> vos;
+  private List<VoConfiguration> vos;
 
+  /**
+   * Constructor.
+   * 
+   * @param backend The @BackendConfiguration info.
+   * @param vos The list of supported @VOConfiguration.
+   */
   @JsonCreator
   public PluginConfiguration(@JsonProperty("backend") BackendConfiguration backend,
-      @JsonProperty("vos") List<VOConfiguration> vos) {
+      @JsonProperty("vos") List<VoConfiguration> vos) {
 
     this.backend = backend;
     this.vos = vos;
@@ -25,7 +31,7 @@ public class PluginConfiguration {
     return backend;
   }
 
-  public List<VOConfiguration> getVos() {
+  public List<VoConfiguration> getVos() {
     return vos;
   }
 

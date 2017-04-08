@@ -1,11 +1,11 @@
 package it.grid.storm.cdmi.config;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Map;
 
 @JsonInclude(Include.NON_NULL)
 public class StormCapabilities {
@@ -15,6 +15,14 @@ public class StormCapabilities {
   private Map<String, Map<String, Object>> containerClasses;
   private Map<String, Map<String, Object>> dataobjectClasses;
 
+  /**
+   * Constructor.
+   * 
+   * @param containerCapabilities List of enabled container capabilities.
+   * @param containerClasses List of container classes.
+   * @param dataobjectCapabilities List of enabled data-object capabilities.
+   * @param dataobjectClasses List of data-object classes.
+   */
   @JsonCreator
   public StormCapabilities(
       @JsonProperty("container_capabilities") Map<String, Object> containerCapabilities,

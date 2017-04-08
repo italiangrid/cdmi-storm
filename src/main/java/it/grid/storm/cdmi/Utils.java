@@ -3,6 +3,10 @@ package it.grid.storm.cdmi;
 import static org.indigo.cdmi.BackendCapability.CapabilityType.CONTAINER;
 import static org.indigo.cdmi.BackendCapability.CapabilityType.DATAOBJECT;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import it.grid.storm.cdmi.config.StormCapabilities;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,14 +17,18 @@ import org.indigo.cdmi.BackendCapability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import it.grid.storm.cdmi.config.StormCapabilities;
-
 public class Utils {
 
   private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
+  /**
+   * Load a JSON file to its relative Java class.
+   * 
+   * @param filePath The JSON file absolute path.
+   * @param objectClass The class of the object to de-serialize.
+   * @return An instance of @param objectClass.
+   * @throws IOException In case file is not found or other IO errors.
+   */
   public static <T> T loadObjectFromJsonFile(String filePath, Class<T> objectClass)
       throws IOException {
 
@@ -32,6 +40,12 @@ public class Utils {
     return object;
   }
 
+  /**
+   * Convert configuration read from file to a list of @BackendCapability
+   * 
+   * @param config The configuration object.
+   * @return the list of @BackendCapability
+   */
   public static List<BackendCapability> buildBackendCapabilities(StormCapabilities config) {
 
     List<BackendCapability> capabilities = new ArrayList<BackendCapability>();
