@@ -12,7 +12,7 @@
 		"cdmi_throughput": true
 	},
 	"container_classes": {
-		"Disk": {
+		"FolderOnDisk": {
 			"cdmi_data_redundancy": "1",
 			"cdmi_geographic_placement": [
 				"IT"
@@ -38,7 +38,7 @@
 		"cdmi_throughput": true
 	},
 	"dataobject_classes": {
-		"Disk": {
+		"FileOnDisk": {
 			"cdmi_data_redundancy": "1",
 			"cdmi_geographic_placement": [
 				"IT"
@@ -46,7 +46,7 @@
 			"cdmi_latency": "0",
 			"cdmi_throughput": "4194304"
 		},
-		"DiskAndTape": {
+		"FileOnDiskAndTape": {
 			"cdmi_data_redundancy": "1",
 			"cdmi_geographic_placement": [
 				"IT"
@@ -54,7 +54,7 @@
 			"cdmi_latency": "0",
 			"cdmi_throughput": "4194304"
 		},
-		"Tape": {
+		"FileOnTape": {
 			"cdmi_data_redundancy": "1",
 			"cdmi_geographic_placement": [
 				"IT"

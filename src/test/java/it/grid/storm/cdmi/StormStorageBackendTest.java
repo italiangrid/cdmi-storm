@@ -1,5 +1,11 @@
 package it.grid.storm.cdmi;
 
+import static it.grid.storm.cdmi.StormStorageBackend.BASE_CONTAINER;
+import static it.grid.storm.cdmi.StormStorageBackend.BASE_DATAOBJECT;
+import static it.grid.storm.cdmi.StormStorageBackend.ContainerClasses.FolderOnDisk;
+import static it.grid.storm.cdmi.StormStorageBackend.DataobjectClasses.FileOnDisk;
+import static it.grid.storm.cdmi.StormStorageBackend.DataobjectClasses.FileOnDiskAndTape;
+import static it.grid.storm.cdmi.StormStorageBackend.DataobjectClasses.FileOnTape;
 import static it.grid.storm.cdmi.Utils.loadObjectFromJsonFile;
 import static it.grid.storm.rest.metadata.model.StoriMetadata.ResourceStatus.NEARLINE;
 import static it.grid.storm.rest.metadata.model.StoriMetadata.ResourceStatus.ONLINE;
@@ -8,12 +14,6 @@ import static it.grid.storm.rest.metadata.model.StoriMetadata.ResourceType.FOLDE
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import it.grid.storm.cdmi.config.StormCapabilities;
-import it.grid.storm.gateway.model.BackendGateway;
-import it.grid.storm.gateway.model.User;
-import it.grid.storm.rest.metadata.model.FileAttributes;
-import it.grid.storm.rest.metadata.model.StoriMetadata;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,18 +21,31 @@ import java.util.List;
 import javax.xml.bind.ValidationException;
 
 import org.indigo.cdmi.BackEndException;
-import org.indigo.cdmi.BackendCapability;
 import org.indigo.cdmi.CdmiObjectStatus;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import it.grid.storm.cdmi.config.PluginConfiguration;
+import it.grid.storm.cdmi.config.StormCapabilities;
+import it.grid.storm.gateway.model.BackendGateway;
+import it.grid.storm.gateway.model.User;
+import it.grid.storm.rest.metadata.model.FileAttributes;
+import it.grid.storm.rest.metadata.model.StoriMetadata;
+
 public class StormStorageBackendTest {
 
-  private final static String FILE_STFN_PATH = "/metadata/test.vo/test.txt";
+  private final static String ROOT_PATH = "/";
+
+  private final static String FILE_STFN_PATH = "/test.vo/test.txt";
   private final static String FILE_ABSOLUTE_PATH = "/tmp/test.vo/test.txt";
 
-  private final static String FOLDER_STFN_PATH = "/metadata/test.vo";
+  private final static String FOLDER_STFN_PATH = "/test.vo";
   private final static String FOLDER_ABSOLUTE_PATH = "/tmp/test.vo";
+
+  private final static String FOLDER_ON_DISK = BASE_CONTAINER + "/" + FolderOnDisk;
+  private final static String FILE_ON_DISK = BASE_DATAOBJECT + "/" + FileOnDisk;
+  private final static String FILE_ON_DISKANDTAPE = BASE_DATAOBJECT + "/" + FileOnDiskAndTape;
+  private final static String FILE_ON_TAPE = BASE_DATAOBJECT + "/" + FileOnTape;
 
   private BackendGateway getBackendGateway(String path, StoriMetadata meta) {
     BackendGateway gateway = Mockito.mock(BackendGateway.class);
@@ -41,12 +54,23 @@ public class StormStorageBackendTest {
     return gateway;
   }
 
-  private List<BackendCapability> getBackendCapabilities(ClassLoader classLoader)
-      throws IOException {
+  private StormCapabilities getStormCapabilities(ClassLoader classLoader) throws IOException {
     String filePath = classLoader.getResource("storm-capabilities.json").getFile();
-    StormCapabilities cap = loadObjectFromJsonFile(filePath, StormCapabilities.class);
-    return Utils.buildBackendCapabilities(cap);
+    return loadObjectFromJsonFile(filePath, StormCapabilities.class);
   }
+
+  private PluginConfiguration getPluginConfiguration(ClassLoader classLoader) throws IOException {
+
+    String filePath = classLoader.getResource("storm-properties.json").getFile();
+    return loadObjectFromJsonFile(filePath, PluginConfiguration.class);
+  }
+
+  // private List<BackendCapability> getBackendCapabilities(ClassLoader classLoader)
+  // throws IOException {
+  // String filePath = classLoader.getResource("storm-capabilities.json").getFile();
+  // StormCapabilities cap = loadObjectFromJsonFile(filePath, StormCapabilities.class);
+  // return Utils.buildBackendCapabilities(cap);
+  // }
 
   @Test
   public void testGetCurrentStatusOfFile()
@@ -58,10 +82,11 @@ public class StormStorageBackendTest {
             .attributes(
                 FileAttributes.builder().migrated(false).pinned(false).premigrated(false).build())
             .build();
-    StormStorageBackend backend = new StormStorageBackend(getBackendCapabilities(classLoader),
-        getBackendGateway(FILE_STFN_PATH, meta));
+    StormStorageBackend backend = new StormStorageBackend(getPluginConfiguration(classLoader),
+        getStormCapabilities(classLoader));
+    backend.setBackendGateway(getBackendGateway(FILE_STFN_PATH, meta));
     CdmiObjectStatus status = backend.getCurrentStatus(FILE_STFN_PATH);
-    assertThat(status.getCurrentCapabilitiesUri(), equalTo("/cdmi_capabilities/dataobject/Disk"));
+    assertThat(status.getCurrentCapabilitiesUri(), equalTo(FILE_ON_DISK));
   }
 
   @Test
@@ -72,12 +97,13 @@ public class StormStorageBackendTest {
     List<String> children = new ArrayList<String>();
     children.add("file1.dat");
     children.add("file2.dat");
-    StoriMetadata metadata = StoriMetadata.builder().absolutePath(FOLDER_ABSOLUTE_PATH)
+    StoriMetadata meta = StoriMetadata.builder().absolutePath(FOLDER_ABSOLUTE_PATH)
         .children(children).type(FOLDER).status(ONLINE).build();
-    StormStorageBackend backend = new StormStorageBackend(getBackendCapabilities(classLoader),
-        getBackendGateway(FOLDER_STFN_PATH, metadata));
+    StormStorageBackend backend = new StormStorageBackend(getPluginConfiguration(classLoader),
+        getStormCapabilities(classLoader));
+    backend.setBackendGateway(getBackendGateway(FOLDER_STFN_PATH, meta));
     CdmiObjectStatus status = backend.getCurrentStatus(FOLDER_STFN_PATH);
-    assertThat(status.getCurrentCapabilitiesUri(), equalTo("/cdmi_capabilities/container/Disk"));
+    assertThat(status.getCurrentCapabilitiesUri(), equalTo(FOLDER_ON_DISK));
   }
 
   @Test
@@ -86,11 +112,11 @@ public class StormStorageBackendTest {
     ClassLoader classLoader = getClass().getClassLoader();
     StoriMetadata meta = StoriMetadata.builder().absolutePath(FILE_ABSOLUTE_PATH).status(ONLINE)
         .type(FILE).attributes(FileAttributes.builder().migrated(true).build()).build();
-    StormStorageBackend backend = new StormStorageBackend(getBackendCapabilities(classLoader),
-        getBackendGateway(FILE_STFN_PATH, meta));
+    StormStorageBackend backend = new StormStorageBackend(getPluginConfiguration(classLoader),
+        getStormCapabilities(classLoader));
+    backend.setBackendGateway(getBackendGateway(FILE_STFN_PATH, meta));
     CdmiObjectStatus status = backend.getCurrentStatus(FILE_STFN_PATH);
-    assertThat(status.getCurrentCapabilitiesUri(),
-        equalTo("/cdmi_capabilities/dataobject/DiskAndTape"));
+    assertThat(status.getCurrentCapabilitiesUri(), equalTo(FILE_ON_DISKANDTAPE));
   }
 
   @Test
@@ -99,10 +125,26 @@ public class StormStorageBackendTest {
     ClassLoader classLoader = getClass().getClassLoader();
     StoriMetadata meta = StoriMetadata.builder().absolutePath(FILE_ABSOLUTE_PATH).status(NEARLINE)
         .type(FILE).attributes(FileAttributes.builder().migrated(true).build()).build();
-    StormStorageBackend backend = new StormStorageBackend(getBackendCapabilities(classLoader),
-        getBackendGateway(FILE_STFN_PATH, meta));
+    StormStorageBackend backend = new StormStorageBackend(getPluginConfiguration(classLoader),
+        getStormCapabilities(classLoader));
+    backend.setBackendGateway(getBackendGateway(FILE_STFN_PATH, meta));
     CdmiObjectStatus status = backend.getCurrentStatus(FILE_STFN_PATH);
-    assertThat(status.getCurrentCapabilitiesUri(), equalTo("/cdmi_capabilities/dataobject/Tape"));
+    assertThat(status.getCurrentCapabilitiesUri(), equalTo(FILE_ON_TAPE));
+    assertThat(status.getTargetCapabilitiesUri(), equalTo(null));
+  }
+
+  @Test
+  public void testGetCurrentStatusOfFileOnTapeEmptyRecallTasks()
+      throws IOException, BackEndException {
+
+    ClassLoader classLoader = getClass().getClassLoader();
+    StoriMetadata meta = StoriMetadata.builder().absolutePath(FILE_ABSOLUTE_PATH).status(NEARLINE)
+        .type(FILE).attributes(FileAttributes.builder().migrated(true).tsmRecT("").build()).build();
+    StormStorageBackend backend = new StormStorageBackend(getPluginConfiguration(classLoader),
+        getStormCapabilities(classLoader));
+    backend.setBackendGateway(getBackendGateway(FILE_STFN_PATH, meta));
+    CdmiObjectStatus status = backend.getCurrentStatus(FILE_STFN_PATH);
+    assertThat(status.getCurrentCapabilitiesUri(), equalTo(FILE_ON_TAPE));
     assertThat(status.getTargetCapabilitiesUri(), equalTo(null));
   }
 
@@ -114,12 +156,12 @@ public class StormStorageBackendTest {
     StoriMetadata meta =
         StoriMetadata.builder().absolutePath(FILE_ABSOLUTE_PATH).status(NEARLINE).type(FILE)
             .attributes(FileAttributes.builder().migrated(true).tsmRecT("taskId").build()).build();
-    StormStorageBackend backend = new StormStorageBackend(getBackendCapabilities(classLoader),
-        getBackendGateway(FILE_STFN_PATH, meta));
+    StormStorageBackend backend = new StormStorageBackend(getPluginConfiguration(classLoader),
+        getStormCapabilities(classLoader));
+    backend.setBackendGateway(getBackendGateway(FILE_STFN_PATH, meta));
     CdmiObjectStatus status = backend.getCurrentStatus(FILE_STFN_PATH);
-    assertThat(status.getCurrentCapabilitiesUri(), equalTo("/cdmi_capabilities/dataobject/Tape"));
-    assertThat(status.getTargetCapabilitiesUri(),
-        equalTo("/cdmi_capabilities/dataobject/DiskAndTape"));
+    assertThat(status.getCurrentCapabilitiesUri(), equalTo(FILE_ON_TAPE));
+    assertThat(status.getTargetCapabilitiesUri(), equalTo(FILE_ON_DISKANDTAPE));
   }
 
   @Test
@@ -127,14 +169,24 @@ public class StormStorageBackendTest {
       throws IOException, ValidationException, BackEndException {
 
     ClassLoader classLoader = getClass().getClassLoader();
-    List<String> children = new ArrayList<String>();
-    children.add("file1.dat");
-    children.add("file2.dat");
-    StoriMetadata metadata = StoriMetadata.builder().absolutePath(FOLDER_ABSOLUTE_PATH)
-        .children(children).type(FOLDER).status(ONLINE).build();
-    StormStorageBackend backend = new StormStorageBackend(getBackendCapabilities(classLoader),
-        getBackendGateway(FOLDER_STFN_PATH, metadata));
-    CdmiObjectStatus status = backend.getCurrentStatus(FOLDER_STFN_PATH);
-    assertThat(status.getCurrentCapabilitiesUri(), equalTo("/cdmi_capabilities/container/Disk"));
+    StormStorageBackend backend = new StormStorageBackend(getPluginConfiguration(classLoader),
+        getStormCapabilities(classLoader));
+    CdmiObjectStatus status = backend.getCurrentStatus(ROOT_PATH);
+    assertThat(status.getCurrentCapabilitiesUri(), equalTo(FOLDER_ON_DISK));
+    assertThat(status.getChildren().size(), equalTo(1));
+    assertThat(status.getChildren().get(0), equalTo("/test.vo"));
+  }
+
+  @Test
+  public void testGetCurrentStatusOfEmptyPath()
+      throws IOException, ValidationException, BackEndException {
+
+    ClassLoader classLoader = getClass().getClassLoader();
+    StormStorageBackend backend = new StormStorageBackend(getPluginConfiguration(classLoader),
+        getStormCapabilities(classLoader));
+    CdmiObjectStatus status = backend.getCurrentStatus("");
+    assertThat(status.getCurrentCapabilitiesUri(), equalTo(FOLDER_ON_DISK));
+    assertThat(status.getChildren().size(), equalTo(1));
+    assertThat(status.getChildren().get(0), equalTo("/test.vo"));
   }
 }
