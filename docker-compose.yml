@@ -11,6 +11,8 @@ services:
   cdmi-server:
     container_name: cdmi-server
 
+    dns_search: local.io
+
     build:
       context: .
       dockerfile: ./docker/storm-cdmi-server/Dockerfile
