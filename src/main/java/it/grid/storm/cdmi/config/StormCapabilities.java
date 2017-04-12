@@ -14,6 +14,7 @@ public class StormCapabilities {
   private Map<String, Object> dataobjectCapabilities;
   private Map<String, Map<String, Object>> containerClasses;
   private Map<String, Map<String, Object>> dataobjectClasses;
+  private Map<String, Map<String, Object>> containerExports;
 
   /**
    * Constructor.
@@ -28,12 +29,14 @@ public class StormCapabilities {
       @JsonProperty("container_capabilities") Map<String, Object> containerCapabilities,
       @JsonProperty("container_classes") Map<String, Map<String, Object>> containerClasses,
       @JsonProperty("dataobject_capabilities") Map<String, Object> dataobjectCapabilities,
-      @JsonProperty("dataobject_classes") Map<String, Map<String, Object>> dataobjectClasses) {
+      @JsonProperty("dataobject_classes") Map<String, Map<String, Object>> dataobjectClasses,
+      @JsonProperty("container_exports") Map<String, Map<String, Object>> containerExports) {
 
     this.containerCapabilities = containerCapabilities;
     this.containerClasses = containerClasses;
     this.dataobjectCapabilities = dataobjectCapabilities;
     this.dataobjectClasses = dataobjectClasses;
+    this.containerExports = containerExports;
   }
 
   public Map<String, Object> getContainerCapabilities() {
@@ -52,11 +55,8 @@ public class StormCapabilities {
     return dataobjectClasses;
   }
 
-  @Override
-  public String toString() {
-    return "CdmiCapabilitiesConfiguration [containerCapabilities=" + containerCapabilities
-        + ", dataobjectCapabilities=" + dataobjectCapabilities + ", containerClasses="
-        + containerClasses + ", dataobjectClasses=" + dataobjectClasses + "]";
+  public Map<String, Map<String, Object>> getContainerExports() {
+    return containerExports;
   }
 
 }

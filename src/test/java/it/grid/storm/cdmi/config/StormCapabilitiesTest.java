@@ -1,6 +1,7 @@
 package it.grid.storm.cdmi.config;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -67,6 +68,9 @@ public class StormCapabilitiesTest {
   @Test
   public void testLoadFromFile() throws JsonParseException, JsonMappingException, IOException {
 
+    final String DAV = "Network/WebDAV";
+    final String SRM = "Network/SRM";
+
     String jsonFile = getClass().getClassLoader().getResource("storm-capabilities.json").getFile();
 
     ObjectMapper mapper = new ObjectMapper();
@@ -80,6 +84,16 @@ public class StormCapabilitiesTest {
     for (String key : cap.getDataobjectCapabilities().keySet()) {
       assertThat(cap.getDataobjectCapabilities().get(key), equalTo(dataobjectCapsMap.get(key)));
     }
+
+    assertThat(cap.getContainerExports().size(), equalTo(2));
+    assertNotNull(cap.getContainerExports().get(DAV));
+    assertThat(cap.getContainerExports().get(DAV).size(), equalTo(2));
+    assertThat(cap.getContainerExports().get(DAV).get("identifier"), equalTo("https://webdav.local.io:8443/"));
+    assertThat(cap.getContainerExports().get(DAV).get("permissions"), equalTo("x509"));
+    assertNotNull(cap.getContainerExports().get(SRM));
+    assertThat(cap.getContainerExports().get(SRM).size(), equalTo(2));
+    assertThat(cap.getContainerExports().get(SRM).get("identifier"), equalTo("srm://frontend.local.io:8444/"));
+    assertThat(cap.getContainerExports().get(SRM).get("permissions"), equalTo("x509"));
   }
 
 }

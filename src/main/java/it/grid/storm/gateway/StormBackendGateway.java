@@ -1,5 +1,8 @@
 package it.grid.storm.gateway;
 
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 
@@ -7,16 +10,20 @@ import it.grid.storm.gateway.model.BackendGateway;
 import it.grid.storm.gateway.model.BackendGatewayException;
 import it.grid.storm.gateway.model.User;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
+import it.grid.storm.rest.recall.model.TaskInsertRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.UnsupportedCharsetException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
@@ -81,9 +88,36 @@ public class StormBackendGateway implements BackendGateway {
   }
 
   @Override
-  public void addRecallTask(User user, String filepath) {
-    // TODO Auto-generated method stub
+  public void addRecallTask(User user, String path) {
 
+    log.debug("GET {} as {}", path, user.getId());
+
+    TaskInsertRequest request = TaskInsertRequest.builder().userId(user.getId()).stfn(path).build();
+    log.debug("Request: {}", request);
+
+    ObjectMapper mapper = new ObjectMapper();
+    StringEntity requestEntity;
+    try {
+      requestEntity = new StringEntity(mapper.writeValueAsString(request), APPLICATION_JSON);
+    } catch (UnsupportedCharsetException | JsonProcessingException e) {
+      log.error(e.getMessage());
+      throw new BackendGatewayException(e.getMessage(), e);
+    }
+
+    HttpPost postMethod = new HttpPost(buildRecallFileUrl());
+    postMethod.setEntity(requestEntity);
+
+    HttpResponse response = null;
+    try {
+      response = httpclient.execute(postMethod);
+    } catch (IOException e) {
+      log.error(e.getMessage());
+      throw new BackendGatewayException(e.getMessage(), e);
+    }
+
+    if (response.getStatusLine().getStatusCode() != 201) {
+      throw new BackendGatewayException("Error response from Backend: " + response.getStatusLine());
+    }
   }
 
   private String buildMetadataUrl(String path) {
@@ -94,6 +128,11 @@ public class StormBackendGateway implements BackendGateway {
     }
     log.debug("build metadata URL for path {}", path);
     return String.format(pattern, hostname, port, path);
+  }
+
+  private String buildRecallFileUrl() {
+
+    return String.format("http://%s:%d/recalltable/task", hostname, port);
   }
 
   private HttpResponse doHttpGet(String url) throws BackendGatewayException {

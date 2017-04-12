@@ -11,8 +11,18 @@
 		"cdmi_latency": true,
 		"cdmi_throughput": true
 	},
+	"container_exports": {
+		"Network/WebDAV": {
+			"identifier": "https://webdav.local.io:8443/",
+			"permissions": "x509"
+		},
+		"Network/SRM": {
+			"identifier": "srm://frontend.local.io:8444/",
+			"permissions": "x509"
+		}
+	},
 	"container_classes": {
-		"FolderOnDisk": {
+		"DiskOnly": {
 			"cdmi_data_redundancy": "1",
 			"cdmi_geographic_placement": [
 				"IT"
@@ -38,7 +48,7 @@
 		"cdmi_throughput": true
 	},
 	"dataobject_classes": {
-		"FileOnDisk": {
+		"DiskOnly": {
 			"cdmi_data_redundancy": "1",
 			"cdmi_geographic_placement": [
 				"IT"
@@ -46,7 +56,7 @@
 			"cdmi_latency": "0",
 			"cdmi_throughput": "4194304"
 		},
-		"FileOnDiskAndTape": {
+		"DiskAndTape": {
 			"cdmi_data_redundancy": "1",
 			"cdmi_geographic_placement": [
 				"IT"
@@ -54,7 +64,7 @@
 			"cdmi_latency": "0",
 			"cdmi_throughput": "4194304"
 		},
-		"FileOnTape": {
+		"TapeOnly": {
 			"cdmi_data_redundancy": "1",
 			"cdmi_geographic_placement": [
 				"IT"
@@ -62,7 +72,7 @@
 			"cdmi_latency": "10000",
 			"cdmi_throughput": "4194304",
 			"cdmi_capabilities_allowed": [
-				"/cdmi_capabilities/dataobject/FileOnDiskAndTape"
+				"/cdmi_capabilities/dataobject/DiskAndTape"
 			]
 		}
 	}

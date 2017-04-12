@@ -1,32 +1,31 @@
 package it.grid.storm.gateway;
 
 import static org.apache.http.HttpVersion.HTTP_1_1;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import it.grid.storm.gateway.SimpleUser;
-import it.grid.storm.gateway.StormBackendGateway;
-import it.grid.storm.gateway.model.BackendGateway;
-import it.grid.storm.gateway.model.BackendGatewayException;
-import it.grid.storm.rest.metadata.model.FileAttributes;
-import it.grid.storm.rest.metadata.model.StoriMetadata;
-
 import java.io.IOException;
-
 import java.io.UnsupportedEncodingException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import it.grid.storm.gateway.model.BackendGateway;
+import it.grid.storm.gateway.model.BackendGatewayException;
+import it.grid.storm.rest.metadata.model.FileAttributes;
+import it.grid.storm.rest.metadata.model.StoriMetadata;
 
 public class StormBackendGatewayTest {
 
@@ -51,7 +50,7 @@ public class StormBackendGatewayTest {
     return response;
   }
 
-  private HttpClient getHttpClientSuccess(StoriMetadata meta)
+  private HttpClient getHttpClientMetadataSuccess(StoriMetadata meta)
       throws ClientProtocolException, IOException {
 
     HttpClient client = getHttpClient();
@@ -64,7 +63,8 @@ public class StormBackendGatewayTest {
     return new BasicHttpResponse(new BasicStatusLine(HTTP_1_1, statusCode, reasonPhrase));
   }
 
-  private HttpClient getHttpClientNotFoundResponse() throws ClientProtocolException, IOException {
+  private HttpClient getHttpClientMetadataNotFoundResponse()
+      throws ClientProtocolException, IOException {
 
     HttpClient client = getHttpClient();
     HttpResponse response = getResponse(404, "Not Found");
@@ -72,11 +72,29 @@ public class StormBackendGatewayTest {
     return client;
   }
 
-  private HttpClient getHttpClientIOException() throws ClientProtocolException, IOException {
+  private HttpClient getHttpClientMetadataIOException()
+      throws ClientProtocolException, IOException {
 
     HttpClient client = getHttpClient();
     Mockito.when(client.execute(Mockito.any(HttpGet.class)))
         .thenThrow(new IOException("not found"));
+    return client;
+  }
+
+  private HttpClient getHttpClientRecallSuccess() throws ClientProtocolException, IOException {
+
+    HttpClient client = getHttpClient();
+    HttpResponse response = getResponse(201, "Created");
+    Mockito.when(client.execute(Mockito.any(HttpPost.class))).thenReturn(response);
+    return client;
+  }
+
+  private HttpClient getHttpClientRecallFailWith(int statusCode)
+      throws ClientProtocolException, IOException {
+
+    HttpClient client = getHttpClient();
+    HttpResponse response = getResponse(statusCode, "Internal server error");
+    Mockito.when(client.execute(Mockito.any(HttpPost.class))).thenReturn(response);
     return client;
   }
 
@@ -87,7 +105,7 @@ public class StormBackendGatewayTest {
         .attributes(
             FileAttributes.builder().migrated(false).pinned(false).premigrated(false).build())
         .build();
-    HttpClient client = getHttpClientSuccess(meta);
+    HttpClient client = getHttpClientMetadataSuccess(meta);
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
     StoriMetadata metaOut = gateway.getStoriMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
     assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
@@ -102,7 +120,7 @@ public class StormBackendGatewayTest {
         .attributes(
             FileAttributes.builder().migrated(false).pinned(false).premigrated(false).build())
         .build();
-    HttpClient client = getHttpClientSuccess(meta);
+    HttpClient client = getHttpClientMetadataSuccess(meta);
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
     StoriMetadata metaOut =
         gateway.getStoriMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH.substring(1));
@@ -114,7 +132,7 @@ public class StormBackendGatewayTest {
   public void testSuccessfulGetMetadataNotFound() throws ClientProtocolException, IOException {
 
 
-    HttpClient client = getHttpClientNotFoundResponse();
+    HttpClient client = getHttpClientMetadataNotFoundResponse();
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
     gateway.getStoriMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
   }
@@ -122,9 +140,29 @@ public class StormBackendGatewayTest {
   @Test(expected = BackendGatewayException.class)
   public void testGetMetadataIOException() throws ClientProtocolException, IOException {
 
-    HttpClient client = getHttpClientIOException();
+    HttpClient client = getHttpClientMetadataIOException();
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
     gateway.getStoriMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
+  }
+
+  @Test
+  public void testSuccessfulPostRecallTask() throws ClientProtocolException, IOException {
+
+    HttpClient client = getHttpClientRecallSuccess();
+    BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
+    gateway.addRecallTask(new SimpleUser("cdmi"), FILE_STFN_PATH);
+  }
+
+  @Test
+  public void testErrorOnPostRecallTask() throws ClientProtocolException, IOException {
+
+    HttpClient client = getHttpClientRecallFailWith(500);
+    BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
+    try {
+      gateway.addRecallTask(new SimpleUser("cdmi"), FILE_STFN_PATH);
+    } catch (BackendGatewayException bge) {
+      assertThat(bge.getMessage(), containsString("500"));
+    }
   }
 
 }
