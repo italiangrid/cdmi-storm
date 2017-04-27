@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 VERSION=0.1.0
 NAME=cdmi-storm
