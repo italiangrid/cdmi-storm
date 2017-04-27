@@ -15,7 +15,7 @@ services:
 
     build:
       context: .
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/${TAG}/Dockerfile
       args:
         YAML_CONFIG_FILE: ${YAML_CONFIG_FILE}
         STORM_CONFIG_FILE: ${STORM_CONFIG_FILE}

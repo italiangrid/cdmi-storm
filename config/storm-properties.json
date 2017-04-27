@@ -1,0 +1,13 @@
+{
+	"backend": {
+		"hostname": "{storm-backend-hostname}",
+		"port": 9998,
+		"token": "{your-xmlrpc-token}"
+	},
+	"organization": {
+		"name": "test.vo",
+		"paths": [
+			"/test.vo"
+		]
+	}
+}

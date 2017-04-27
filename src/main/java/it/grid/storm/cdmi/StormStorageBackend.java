@@ -10,7 +10,6 @@ import static org.indigo.cdmi.BackendCapability.CapabilityType.CONTAINER;
 import static org.indigo.cdmi.BackendCapability.CapabilityType.DATAOBJECT;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +23,9 @@ import org.indigo.cdmi.spi.StorageBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.grid.storm.cdmi.config.Organization;
 import it.grid.storm.cdmi.config.PluginConfiguration;
 import it.grid.storm.cdmi.config.StormCapabilities;
-import it.grid.storm.cdmi.config.VoConfiguration;
 import it.grid.storm.gateway.SimpleUser;
 import it.grid.storm.gateway.StormBackendGateway;
 import it.grid.storm.gateway.model.BackendGateway;
@@ -47,8 +46,8 @@ public class StormStorageBackend implements StorageBackend {
 
   private List<BackendCapability> backendCapabilities;
   private BackendGateway backendGateway;
+  private Organization organization;
   private Map<String, Object> containerCapabilities;
-  private List<VoConfiguration> vos;
   private Map<String, Map<String, Object>> exportAttributes;
 
   /**
@@ -60,11 +59,11 @@ public class StormStorageBackend implements StorageBackend {
     Preconditions.checkNotNull(config, "Invalid null plugin configuration");
     Preconditions.checkNotNull(capabilities, "Invalid null capabilities configuration");
     containerCapabilities = capabilities.getContainerCapabilities();
-    vos = config.getVos();
     exportAttributes = capabilities.getContainerExports();
     backendCapabilities = buildBackendCapabilities(capabilities);
     backendGateway = new StormBackendGateway(config.getBackend().getHostname(),
         config.getBackend().getPort(), config.getBackend().getToken());
+    organization = config.getOrganization();
   }
 
   /**
@@ -86,6 +85,8 @@ public class StormStorageBackend implements StorageBackend {
 
   @Override
   public CdmiObjectStatus getCurrentStatus(String path) throws BackEndException {
+
+//    verifyUserAuthorization();
 
     if (isRootPath(path)) {
 
@@ -121,13 +122,7 @@ public class StormStorageBackend implements StorageBackend {
     String currentCapabilitiesUri = getCapabilityUri(CONTAINER, DiskOnly);
     CdmiObjectStatus currentStatus =
         new CdmiObjectStatus(containerCapabilities, currentCapabilitiesUri, null);
-    List<String> children = Lists.newArrayList();
-    for (VoConfiguration vo : vos) {
-      for (String rootStfn : vo.getRoots()) {
-        children.add(rootStfn);
-      }
-    }
-    currentStatus.setChildren(children);
+    currentStatus.setChildren(organization.getPaths());
     currentStatus.setExportAttributes(getExportAttributes("/"));
     return currentStatus;
   }
@@ -173,7 +168,7 @@ public class StormStorageBackend implements StorageBackend {
 
     if (cap.getType().equals(CONTAINER)) {
 
-      log.debug("{} is a container and cannot change QoS");
+      log.debug("{} is a container and cannot change QoS", path);
       throw new BackEndException("Containers QoS cannot change");
     }
 
@@ -280,5 +275,35 @@ public class StormStorageBackend implements StorageBackend {
     }
     return caps;
   }
+
+
+//  private void verifyUserAuthorization() throws BackEndException {
+//
+//    final String title = "User not authorized: ";
+//
+//    SecurityContext context = SecurityContextHolder.getContext();
+//    if (context == null) {
+//      log.debug("SecurityContext not found");
+//      throw new BackEndException(title + "SecurityContext not found!");
+//    }
+//
+//    Authentication authentication = context.getAuthentication();
+//    if (authentication == null) {
+//      log.debug("Null Authentication found");
+//      throw new BackEndException(title + "Null Authentication found!");
+//    }
+//
+//    if (!(authentication instanceof UsernamePasswordAuthenticationToken)) {
+//      log.debug("Unexpected Authentication found: {}", authentication.getClass().getName());
+//      throw new BackEndException(title + "Unexpected Authentication found!");
+//    }
+//
+//    UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) authentication;
+//    log.info("Sub: {}", auth.getPrincipal());
+//    log.info("Info: {}", auth.getDetails());
+//
+//    JSONObject authDetails = new JSONObject(auth.getDetails());
+//
+//  }
 
 }

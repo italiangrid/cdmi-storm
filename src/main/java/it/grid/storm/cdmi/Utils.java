@@ -4,8 +4,7 @@ import static org.indigo.cdmi.BackendCapability.CapabilityType.CONTAINER;
 import static org.indigo.cdmi.BackendCapability.CapabilityType.DATAOBJECT;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import it.grid.storm.cdmi.config.StormCapabilities;
+import com.google.common.base.CharMatcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +16,14 @@ import org.indigo.cdmi.BackendCapability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.grid.storm.cdmi.config.StormCapabilities;
+
 public class Utils {
 
   private static final Logger log = LoggerFactory.getLogger(Utils.class);
+
+  public static final CharMatcher ALPHA_NUMERIC = CharMatcher.inRange('a', 'z')
+      .or(CharMatcher.inRange('A', 'Z')).or(CharMatcher.inRange('0', '9')).precomputed();
 
   /**
    * Load a JSON file to its relative Java class.

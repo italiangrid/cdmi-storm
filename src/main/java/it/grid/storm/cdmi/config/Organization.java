@@ -8,35 +8,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonInclude(Include.NON_EMPTY)
-public class VoConfiguration {
+public class Organization {
 
   private String name;
-  private List<String> roots;
+  private List<String> paths;
 
   /**
    * Constructor.
    * 
    * @param name Virtual File-system name.
-   * @param roots The list of access points.
+   * @param paths The list of access points.
    */
   @JsonCreator
-  public VoConfiguration(@JsonProperty("name") String name,
-      @JsonProperty("roots") List<String> roots) {
+  public Organization(@JsonProperty("name") String name,
+      @JsonProperty("paths") List<String> paths) {
 
     this.name = name;
-    this.roots = roots;
+    this.paths = paths;
   }
 
   public String getName() {
     return name;
   }
 
-  public List<String> getRoots() {
-    return roots;
+  public List<String> getPaths() {
+    return paths;
   }
 
   @Override
   public String toString() {
-    return "VOConfiguration [name=" + name + ", roots=" + roots + "]";
+    return "VOConfiguration [name=" + name + ", roots=" + paths + "]";
   }
 }

@@ -35,10 +35,9 @@ public class PluginConfigurationTest {
     assertThat(pc.getBackend().getHostname(), equalTo("test-hostname.local.io"));
     assertThat(pc.getBackend().getPort(), equalTo(9998));
     assertThat(pc.getBackend().getToken(), equalTo("testtoken"));
-    assertThat(pc.getVos().size(), equalTo(1));
-    assertThat(pc.getVos().get(0).getName(), equalTo("test.vo"));
-    assertThat(pc.getVos().get(0).getRoots().size(), equalTo(1));
-    assertThat(pc.getVos().get(0).getRoots().get(0), equalTo("/test.vo"));
+    assertThat(pc.getOrganization().getName(), equalTo("test.vo"));
+    assertThat(pc.getOrganization().getPaths().size(), equalTo(1));
+    assertThat(pc.getOrganization().getPaths().get(0), equalTo("/test.vo"));
     log.info(pc.toString());
   }
 

@@ -4,10 +4,10 @@
         "port": 9998,
         "token": "testtoken"
         },
-    "vos": [{
+    "organization": {
         "name": "test.vo",
-        "roots": [
-                "/test.vo"
-            ]
-        }]
+        "paths": [
+            "/test.vo"
+        ]
+    }
 }
