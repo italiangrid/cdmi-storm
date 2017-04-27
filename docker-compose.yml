@@ -15,14 +15,17 @@ services:
 
     build:
       context: .
-      dockerfile: ./docker/storm-cdmi-server/Dockerfile
+      dockerfile: ./docker/Dockerfile
       args:
         YAML_CONFIG_FILE: ${YAML_CONFIG_FILE}
         STORM_CONFIG_FILE: ${STORM_CONFIG_FILE}
         STORM_CAPABILITIES_FILE: ${STORM_CAPABILITIES_FILE}
         CDMI_SERVER_PORT: ${CDMI_SERVER_PORT}
+        #DEBUG_OPTS: "-Xdebug -Xrunjdwp:transport=dt_socket,address=9999,server=y,suspend=y"
+        DEBUG_OPTS: ""
     ports:
       - "${EXTERNAL_PORT}:${CDMI_SERVER_PORT}"
+      - 9999:9999
     depends_on:
       - redis
     extra_hosts:
