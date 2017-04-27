@@ -136,23 +136,25 @@ public class StormStorageBackend implements StorageBackend {
 
     Map<String, Object> out = new HashMap<String, Object>();
 
-    if (exportAttributes.containsKey("Network/WebDAV")) {
-      Map<String, Object> info = new HashMap<String, Object>();
-      String identifier =
-          exportAttributes.get("Network/WebDAV").get("identifier").toString() + path;
-      identifier = identifier.replaceAll("(?<!(http:|https:))[//]+", "/");
-      info.put("identifier", identifier);
-      info.put("permissions", exportAttributes.get("Network/WebDAV").get("permissions"));
-      out.put("Network/WebDAV", info);
-    }
+    if (exportAttributes != null) {
+      if (exportAttributes.containsKey("Network/WebDAV")) {
+        Map<String, Object> info = new HashMap<String, Object>();
+        String identifier =
+            exportAttributes.get("Network/WebDAV").get("identifier").toString() + path;
+        identifier = identifier.replaceAll("(?<!(http:|https:))[//]+", "/");
+        info.put("identifier", identifier);
+        info.put("permissions", exportAttributes.get("Network/WebDAV").get("permissions"));
+        out.put("Network/WebDAV", info);
+      }
 
-    if (exportAttributes.containsKey("Network/SRM")) {
-      Map<String, Object> info = new HashMap<String, Object>();
-      String identifier = exportAttributes.get("Network/SRM").get("identifier").toString() + path;
-      identifier = identifier.replaceAll("(?<!(srm:|httpg:))[//]+", "/");
-      info.put("identifier", identifier);
-      info.put("permissions", exportAttributes.get("Network/SRM").get("permissions"));
-      out.put("Network/SRM", info);
+      if (exportAttributes.containsKey("Network/SRM")) {
+        Map<String, Object> info = new HashMap<String, Object>();
+        String identifier = exportAttributes.get("Network/SRM").get("identifier").toString() + path;
+        identifier = identifier.replaceAll("(?<!(srm:|httpg:))[//]+", "/");
+        info.put("identifier", identifier);
+        info.put("permissions", exportAttributes.get("Network/SRM").get("permissions"));
+        out.put("Network/SRM", info);
+      }
     }
 
     return out;

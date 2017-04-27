@@ -23,22 +23,23 @@ public class StormStorageBackendFactory implements StorageBackendFactory {
   public static final String type = "storm";
   public static final String description = "StoRM Storage Backend CDMI module";
 
-  @Override
-  public StorageBackend createStorageBackend(Map<String, String> args)
+  public static final String defaultPropertiesFile = "/etc/cdmi-server/plugins/storm-properties.json";
+  public static final String defaultCapabilitiesJsonFile = "/etc/cdmi-server/plugins/storm-capabilities.json";
+
+  private PluginConfiguration config;
+  private StormCapabilities capabilities = null;
+
+  public StormStorageBackendFactory() {
+    this(defaultPropertiesFile, defaultCapabilitiesJsonFile);
+  }
+
+  public StormStorageBackendFactory(String configFilePath, String capabilitiesFilePath)
       throws IllegalArgumentException {
 
-    log.debug("Storm Storage Backend Factory");
-
-    Preconditions.checkArgument(System.getProperties().containsKey("storm.configFile"),
-        "system property storm.configFile not found");
-    Preconditions.checkArgument(System.getProperties().containsKey("storm.capabilitiesFile"),
-        "system property storm.capabilitiesFile not found");
-
-    String configFilePath = System.getProperty("storm.configFile");
-    String capabilitiesFilePath = System.getProperty("storm.capabilitiesFile");
-
-    PluginConfiguration config = null;
-    StormCapabilities capabilities = null;
+    Preconditions.checkArgument(configFilePath != null,
+        defaultPropertiesFile + " path is null");
+    Preconditions.checkArgument(capabilitiesFilePath != null,
+        defaultCapabilitiesJsonFile + " path is null");
 
     try {
 
@@ -50,6 +51,10 @@ public class StormStorageBackendFactory implements StorageBackendFactory {
       log.error(e.getMessage());
       throw new IllegalArgumentException(e.getMessage(), e);
     }
+  }
+
+  @Override
+  public StorageBackend createStorageBackend(Map<String, String> args) {
 
     return new SubjectBasedStorageBackend(new StormStorageBackend(config, capabilities));
   }

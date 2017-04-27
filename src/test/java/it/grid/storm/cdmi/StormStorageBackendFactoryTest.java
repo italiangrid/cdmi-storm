@@ -20,37 +20,23 @@ public class StormStorageBackendFactoryTest {
 
   private static Map<String, String> EMPTY_ARGS = Collections.emptyMap();
 
-  private void setConfigFileProperty() {
+  private String getStormPropertiesPath() {
 
     ClassLoader classLoader = getClass().getClassLoader();
-    setConfigFileProperty(classLoader.getResource("storm-properties.json").getFile());
+    return classLoader.getResource("storm-properties.json").getFile();
   }
 
-  private void setConfigFileProperty(String value) {
-
-    System.setProperty("storm.configFile", value);
-  }
-
-  private void setCapabilitiesFileProperty() {
+  private String getStormCapabilitiesPath() {
 
     ClassLoader classLoader = getClass().getClassLoader();
-    setCapabilitiesFileProperty(classLoader.getResource("storm-capabilities.json").getFile());
-  }
-
-  private void setCapabilitiesFileProperty(String value) {
-
-    ClassLoader classLoader = getClass().getClassLoader();
-    System.setProperty("storm.capabilitiesFile",
-        classLoader.getResource("storm-capabilities.json").getFile());
+    return classLoader.getResource("storm-capabilities.json").getFile();
   }
 
   @Test
   public void testDecriptionAndType() {
 
-    setConfigFileProperty();
-    setCapabilitiesFileProperty();
-
-    StorageBackendFactory factory = new StormStorageBackendFactory();
+    StorageBackendFactory factory =
+        new StormStorageBackendFactory(getStormPropertiesPath(), getStormCapabilitiesPath());
     assertThat(factory.getDescription(), equalTo("StoRM Storage Backend CDMI module"));
     assertThat(factory.getType(), equalTo("storm"));
   }
@@ -58,10 +44,8 @@ public class StormStorageBackendFactoryTest {
   @Test
   public void createStorageBackend() throws BackEndException {
 
-    setConfigFileProperty();
-    setCapabilitiesFileProperty();
-
-    StorageBackendFactory factory = new StormStorageBackendFactory();
+    StorageBackendFactory factory =
+        new StormStorageBackendFactory(getStormPropertiesPath(), getStormCapabilitiesPath());
     StorageBackend stormStorageBackend = factory.createStorageBackend(EMPTY_ARGS);
     log.debug("StorageBackend capabilities: {}", stormStorageBackend.getCapabilities());
     assertThat(stormStorageBackend.getCapabilities().size(), equalTo(4));
@@ -70,40 +54,36 @@ public class StormStorageBackendFactoryTest {
   @Test(expected = IllegalArgumentException.class)
   public void createStorageBackendNullConfigFile() {
 
-    setCapabilitiesFileProperty();
-
-    StorageBackendFactory factory = new StormStorageBackendFactory();
+    StorageBackendFactory factory =
+        new StormStorageBackendFactory(null, getStormCapabilitiesPath());
     factory.createStorageBackend(EMPTY_ARGS);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void createStorageBackendNotFoundConfigFile() {
 
-    setConfigFileProperty("/path/to/invalid/storm-properties.json");
-    setCapabilitiesFileProperty();
-
-    StorageBackendFactory factory = new StormStorageBackendFactory();
-    factory.createStorageBackend(EMPTY_ARGS);
+    new StormStorageBackendFactory(
+        "/path/to/invalid/storm-properties.json", getStormCapabilitiesPath());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void createStorageBackendEmptyConfigFile() {
 
     ClassLoader classLoader = getClass().getClassLoader();
-    setConfigFileProperty(classLoader.getResource("empty-properties.json").getFile());
-    setCapabilitiesFileProperty();
-
-    StorageBackendFactory factory = new StormStorageBackendFactory();
-    factory.createStorageBackend(EMPTY_ARGS);
+    new StormStorageBackendFactory(
+        classLoader.getResource("empty-properties.json").getFile(), getStormCapabilitiesPath());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void createStorageBackendNullCapabilitiesFile() {
 
-    setConfigFileProperty();
+    new StormStorageBackendFactory(getStormPropertiesPath(), null);
+  }
 
-    StorageBackendFactory factory = new StormStorageBackendFactory();
-    factory.createStorageBackend(EMPTY_ARGS);
+  @Test(expected = IllegalArgumentException.class)
+  public void createDefaultStorageBackend() {
+
+    new StormStorageBackendFactory();
   }
 
   /**
