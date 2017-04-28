@@ -31,12 +31,12 @@ resources statuses and trigger recall requests for the nearline files.
 %install
 mkdir -p %{buildroot}/usr/lib/cdmi-server/plugins
 mkdir -p %{buildroot}/etc/cdmi-server/plugins
-cp %{_topdir}/SOURCES/%{name}-%{jarversion}.jar %{buildroot}/usr/lib/cdmi-server/plugins
+cp %{_topdir}/SOURCES/%{name}-%{jarversion}-jar-with-dependencies.jar %{buildroot}/usr/lib/cdmi-server/plugins
 cp %{_topdir}/SOURCES/storm-capabilities.json %{buildroot}/etc/cdmi-server/plugins/storm-capabilities.json
 cp %{_topdir}/SOURCES/storm-properties.json %{buildroot}/etc/cdmi-server/plugins/storm-properties.json
 
 %files
-/usr/lib/cdmi-server/plugins/%{name}-%{jarversion}.jar
+/usr/lib/cdmi-server/plugins/%{name}-%{jarversion}-jar-with-dependencies.jar
 /etc/cdmi-server/plugins/storm-capabilities.json
 /etc/cdmi-server/plugins/storm-properties.json
 

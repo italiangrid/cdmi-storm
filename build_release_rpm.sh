@@ -8,7 +8,7 @@ TOPDIR=`pwd`/rpm
 mvn clean package
 
 mkdir -p $TOPDIR/SOURCES
-cp target/$NAME-$VERSION-jar-with-dependencies.jar $TOPDIR/SOURCES/$NAME-$VERSION.jar
+cp target/$NAME-$VERSION-jar-with-dependencies.jar $TOPDIR/SOURCES
 cp config/storm-capabilities.json $TOPDIR/SOURCES/storm-capabilities.json
 cp config/storm-properties.json $TOPDIR/SOURCES/storm-properties.json
 ls $TOPDIR/SOURCES/
