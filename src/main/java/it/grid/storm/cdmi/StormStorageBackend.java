@@ -86,8 +86,6 @@ public class StormStorageBackend implements StorageBackend {
   @Override
   public CdmiObjectStatus getCurrentStatus(String path) throws BackEndException {
 
-//    verifyUserAuthorization();
-
     if (isRootPath(path)) {
 
       log.debug("Root path requested ...");
@@ -275,35 +273,5 @@ public class StormStorageBackend implements StorageBackend {
     }
     return caps;
   }
-
-
-//  private void verifyUserAuthorization() throws BackEndException {
-//
-//    final String title = "User not authorized: ";
-//
-//    SecurityContext context = SecurityContextHolder.getContext();
-//    if (context == null) {
-//      log.debug("SecurityContext not found");
-//      throw new BackEndException(title + "SecurityContext not found!");
-//    }
-//
-//    Authentication authentication = context.getAuthentication();
-//    if (authentication == null) {
-//      log.debug("Null Authentication found");
-//      throw new BackEndException(title + "Null Authentication found!");
-//    }
-//
-//    if (!(authentication instanceof UsernamePasswordAuthenticationToken)) {
-//      log.debug("Unexpected Authentication found: {}", authentication.getClass().getName());
-//      throw new BackEndException(title + "Unexpected Authentication found!");
-//    }
-//
-//    UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) authentication;
-//    log.info("Sub: {}", auth.getPrincipal());
-//    log.info("Info: {}", auth.getDetails());
-//
-//    JSONObject authDetails = new JSONObject(auth.getDetails());
-//
-//  }
 
 }

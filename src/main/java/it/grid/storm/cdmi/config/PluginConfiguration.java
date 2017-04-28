@@ -15,7 +15,7 @@ public class PluginConfiguration {
    * Constructor.
    * 
    * @param backend The @BackendConfiguration info.
-   * @param vos The list of supported @VOConfiguration.
+   * @param organization Info about the supported @Organization.
    */
   @JsonCreator
   public PluginConfiguration(@JsonProperty("backend") BackendConfiguration backend,
