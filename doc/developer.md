@@ -20,18 +20,14 @@ You will need:
 - Docker 1.11.1
 - Docker compose >= 1.7
 
-You need to build the cdmi-server image, first:
+Start the development/testing environment with the following command:
 
 ```bash
-docker build -t cdmi-server docker/cdmi-server
+TAG=devel docker-compose up --build
 ```
 
-Then, you can start a development/testing environment with the following command:
-
-```bash
-  docker-compose build
-  docker-compose up
-```
+Use TAG=devel to build and manually install cdmi-storm by manually move the jar file.
+Use TAG=deploy to generate rpm and install it before launching the CDMI server.
 
 The docker-compose.yml file requires that you set some environment variables
 for it to run properly, mainly to provide StoRM Backend remote hostname, port 
@@ -41,6 +37,7 @@ Create a ```.env``` file with the following environment variables:
 
 Name | Description
 --- | ---
+**TAG** | Switch between Dockerfiles. Values: devel, deploy.
 **YAML\_CONFIG\_FILE** | Path to application.yml file
 **STORM\_CONFIG\_FILE** | Path to storm.properties file
 **STORM\_CAPABILITIES\_FILE** | Path to storm-capabilities.json
@@ -64,10 +61,10 @@ $ cat /etc/hosts
 
 ### Using the configured rest user
 
-Get ```FolderOnDisk``` container capability info:
+Get ```DiskOnly``` dataobject capability info:
 
 ```
-curl -u restusername:restuserpassword http://cdmi-server.local.io:8080/cdmi_capabilities/container/FolderOnDisk
+curl -u restusername:restuserpassword http://cdmi-server.local.io:8080/cdmi_capabilities/dataobject/DiskOnly
 ```
 
 Get status of file ```/test.vo/test.txt```:
