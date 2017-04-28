@@ -15,4 +15,4 @@ ls $TOPDIR/SOURCES/
 
 rpmbuild --define "_topdir ${TOPDIR}" -ba $TOPDIR/SPECS/$NAME.spec
 
-cp ${TOPDIR}/RPMS/x86_64/cdmi-storm-${VERSION}-1.el7.centos.x86_64.rpm .
+cp ${TOPDIR}/RPMS/x86_64/cdmi-storm-${VERSION}-1.el7.x86_64.rpm .

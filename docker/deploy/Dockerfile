@@ -23,7 +23,7 @@ COPY . /cdmi-storm
 WORKDIR /cdmi-storm
 RUN sh build_release_rpm.sh
 
-RUN yum localinstall -y cdmi-storm-0.1.0-1.el7.centos.x86_64.rpm
+RUN yum localinstall -y cdmi-storm-0.1.0-1.el7.x86_64.rpm
 
 EXPOSE ${CDMI_SERVER_PORT} 9999
 

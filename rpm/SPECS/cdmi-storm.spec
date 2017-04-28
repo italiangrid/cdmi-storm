@@ -5,6 +5,7 @@
 %define name            cdmi-storm
 %define jarversion      0.1.0
 %define user            cdmi
+%define dist            .el7
 
 Name:       %{name}
 Version:    %{jarversion}
