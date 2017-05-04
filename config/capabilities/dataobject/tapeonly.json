@@ -1,0 +1,30 @@
+{
+    "name": "TapeOnly",
+    "capabilities": {
+        "cdmi_capabilities_templates": true,
+        "cdmi_capabilities_exact_inherit": true,
+        "cdmi_recommended_polling_interval": true,
+        "cdmi_data_storage_lifetime": true,
+        "cdmi_data_redundancy": true,
+        "cdmi_geographic_placement": true,
+        "cdmi_latency": true,
+        "cdmi_throughput": true,
+        "cdmi_durability": true,
+        "cdmi_export_container_http": true,
+        "cdmi_capabilities_allowed": true
+    },
+    "metadata": {
+        "cdmi_data_redundancy_provided": "1",
+        "cdmi_geographic_placement_provided": [
+            "IT"
+        ],
+        "cdmi_latency_provided": "10000",
+        "cdmi_throughput_provided": "4194304",
+        "cdmi_data_storage_lifetime_provided": "P20Y",
+        "cdmi_recommended_polling_interval": "50000",
+        "cdmi_capabilities_allowed": [
+            "/cdmi_capabilities/dataobject/DiskAndTape"
+        ],
+        "cdmi_durability_provided": "99.999"
+    }
+}

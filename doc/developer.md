@@ -56,27 +56,3 @@ $ cat /etc/hosts
 
 192.168.99.100 cdmi-server.local.io
 ```
-
-## Run tests:
-
-### Using the configured rest user
-
-Get ```DiskOnly``` dataobject capability info:
-
-```
-curl -u restusername:restuserpassword http://cdmi-server.local.io:8080/cdmi_capabilities/dataobject/DiskOnly
-```
-
-Get status of file ```/test.vo/test.txt```:
-
-```
-curl -u restusername:restuserpassword http://cdmi-server.local.io:8080/test.vo/test.txt
-```
-
-## Related projects
-
-This project builds upon the following projects/technologies:
-
-- [INDIGO DataCloud CDMI Server][cdmi-server]
-
-[cdmi-server]: https://github.com/indigo-dc/CDMI

@@ -1,12 +1,11 @@
 package it.grid.storm.cdmi.config;
 
-import static it.grid.storm.cdmi.Utils.loadObjectFromJsonFile;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import it.grid.storm.cdmi.Utils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -19,10 +18,12 @@ public class PluginConfigurationTest {
 
   private static final Logger log = LoggerFactory.getLogger(PluginConfigurationTest.class);
 
+  private ObjectMapper mapper = new ObjectMapper();
+
   private PluginConfiguration getPluginConfiguration(ClassLoader classLoader) throws IOException {
 
     String filePath = classLoader.getResource("storm-properties.json").getFile();
-    PluginConfiguration conf = Utils.loadObjectFromJsonFile(filePath, PluginConfiguration.class);
+    PluginConfiguration conf = mapper.readValue(new File(filePath), PluginConfiguration.class);
     return conf;
   }
 
@@ -35,17 +36,21 @@ public class PluginConfigurationTest {
     assertThat(pc.getBackend().getHostname(), equalTo("test-hostname.local.io"));
     assertThat(pc.getBackend().getPort(), equalTo(9998));
     assertThat(pc.getBackend().getToken(), equalTo("testtoken"));
-    assertThat(pc.getOrganization().getName(), equalTo("test.vo"));
-    assertThat(pc.getOrganization().getPaths().size(), equalTo(1));
-    assertThat(pc.getOrganization().getPaths().get(0), equalTo("/test.vo"));
+    assertThat(pc.getVos().size(), equalTo(2));
+    assertThat(pc.getVos().get(0).getName(), equalTo("test.vo"));
+    assertThat(pc.getVos().get(0).getIamGroup(), equalTo("test.vo-users"));
+    assertThat(pc.getVos().get(0).getReadScope(), equalTo("testvo:read"));
+    assertThat(pc.getVos().get(0).getRecallScope(), equalTo("testvo:recall"));
+    assertThat(pc.getVos().get(0).getPath(), equalTo("/test.vo"));
     log.info(pc.toString());
   }
 
   @Test
   public void testLoadNotFoundPropertiesFile() throws IOException {
 
+    String filePath = "/this/is/not/a/path/to/storm.properties";
     try {
-      loadObjectFromJsonFile("/this/is/not/a/path/to/storm.properties", PluginConfiguration.class);
+      mapper.readValue(new File(filePath), PluginConfiguration.class);
       Assert.fail();
     } catch (FileNotFoundException e) {
       assertThat(e.getClass(), equalTo(FileNotFoundException.class));

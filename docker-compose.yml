@@ -9,6 +9,10 @@ services:
       - "6379:6379"
 
   cdmi-server:
+
+    environment:
+      TZ: "Europe/Rome"
+
     container_name: cdmi-server
 
     dns_search: local.io

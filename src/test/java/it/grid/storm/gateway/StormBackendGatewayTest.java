@@ -22,6 +22,7 @@ import org.apache.http.message.BasicStatusLine;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import it.grid.storm.cdmi.auth.User;
 import it.grid.storm.gateway.model.BackendGateway;
 import it.grid.storm.gateway.model.BackendGatewayException;
 import it.grid.storm.rest.metadata.model.FileAttributes;
@@ -36,12 +37,20 @@ public class StormBackendGatewayTest {
   private final static int PORT = 9998;
   private final static String TOKEN = "MY_SECRET_TOKEN";
 
+  private final static User USER = getUser("cdmi");
+
   private HttpClient getHttpClient() {
     HttpClient client = Mockito.mock(HttpClient.class);
     return client;
   }
 
-  private HttpResponse getSuccessGetMetadataResponse(StoriMetadata meta)
+  private static User getUser(String id) {
+  	User user = Mockito.mock(User.class);
+  	Mockito.when(user.getUserId()).thenReturn(id);
+		return user;
+	}
+
+	private HttpResponse getSuccessGetMetadataResponse(StoriMetadata meta)
       throws UnsupportedEncodingException, JsonProcessingException {
 
     ObjectMapper mapper = new ObjectMapper();
@@ -107,7 +116,7 @@ public class StormBackendGatewayTest {
         .build();
     HttpClient client = getHttpClientMetadataSuccess(meta);
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
-    StoriMetadata metaOut = gateway.getStoriMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
+    StoriMetadata metaOut = gateway.getStoriMetadata(USER, FILE_STFN_PATH);
     assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
     assertThat(metaOut.getType(), equalTo(meta.getType()));
   }
@@ -123,7 +132,7 @@ public class StormBackendGatewayTest {
     HttpClient client = getHttpClientMetadataSuccess(meta);
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
     StoriMetadata metaOut =
-        gateway.getStoriMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH.substring(1));
+        gateway.getStoriMetadata(USER, FILE_STFN_PATH.substring(1));
     assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
     assertThat(metaOut.getType(), equalTo(meta.getType()));
   }
@@ -134,7 +143,7 @@ public class StormBackendGatewayTest {
 
     HttpClient client = getHttpClientMetadataNotFoundResponse();
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
-    gateway.getStoriMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
+    gateway.getStoriMetadata(USER, FILE_STFN_PATH);
   }
 
   @Test(expected = BackendGatewayException.class)
@@ -142,7 +151,7 @@ public class StormBackendGatewayTest {
 
     HttpClient client = getHttpClientMetadataIOException();
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
-    gateway.getStoriMetadata(new SimpleUser("cdmi"), FILE_STFN_PATH);
+    gateway.getStoriMetadata(USER, FILE_STFN_PATH);
   }
 
   @Test
@@ -150,7 +159,7 @@ public class StormBackendGatewayTest {
 
     HttpClient client = getHttpClientRecallSuccess();
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
-    gateway.addRecallTask(new SimpleUser("cdmi"), FILE_STFN_PATH);
+    gateway.addRecallTask(USER, FILE_STFN_PATH);
   }
 
   @Test
@@ -159,7 +168,7 @@ public class StormBackendGatewayTest {
     HttpClient client = getHttpClientRecallFailWith(500);
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
     try {
-      gateway.addRecallTask(new SimpleUser("cdmi"), FILE_STFN_PATH);
+      gateway.addRecallTask(USER, FILE_STFN_PATH);
     } catch (BackendGatewayException bge) {
       assertThat(bge.getMessage(), containsString("500"));
     }

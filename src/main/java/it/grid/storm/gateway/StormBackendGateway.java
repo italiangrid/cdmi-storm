@@ -6,9 +6,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 
+import it.grid.storm.cdmi.auth.User;
 import it.grid.storm.gateway.model.BackendGateway;
 import it.grid.storm.gateway.model.BackendGatewayException;
-import it.grid.storm.gateway.model.User;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 import it.grid.storm.rest.recall.model.TaskInsertRequest;
 
@@ -65,7 +65,7 @@ public class StormBackendGateway implements BackendGateway {
   @Override
   public StoriMetadata getStoriMetadata(User user, String path) throws BackendGatewayException {
 
-    log.info("GET {} as {}", path, user.getId());
+    log.info("GET {} as {}", path, user.getUserId());
 
     String url = buildMetadataUrl(path);
     log.debug("Metadata URL: {}", url);
@@ -90,9 +90,9 @@ public class StormBackendGateway implements BackendGateway {
   @Override
   public void addRecallTask(User user, String path) {
 
-    log.debug("GET {} as {}", path, user.getId());
+    log.debug("GET {} as {}", path, user.getUserId());
 
-    TaskInsertRequest request = TaskInsertRequest.builder().userId(user.getId()).stfn(path).build();
+    TaskInsertRequest request = TaskInsertRequest.builder().userId(user.getUserId()).stfn(path).build();
     log.debug("Request: {}", request);
 
     ObjectMapper mapper = new ObjectMapper();

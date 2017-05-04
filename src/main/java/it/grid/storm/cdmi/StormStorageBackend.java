@@ -1,32 +1,36 @@
 package it.grid.storm.cdmi;
 
-import static it.grid.storm.cdmi.StormStorageBackend.CapabilityClasses.DiskAndTape;
-import static it.grid.storm.cdmi.StormStorageBackend.CapabilityClasses.DiskOnly;
-import static it.grid.storm.cdmi.StormStorageBackend.CapabilityClasses.TapeOnly;
 import static it.grid.storm.cdmi.Utils.buildBackendCapabilities;
-import static it.grid.storm.rest.metadata.model.StoriMetadata.ResourceStatus.ONLINE;
-import static it.grid.storm.rest.metadata.model.StoriMetadata.ResourceType.FOLDER;
 import static org.indigo.cdmi.BackendCapability.CapabilityType.CONTAINER;
-import static org.indigo.cdmi.BackendCapability.CapabilityType.DATAOBJECT;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.indigo.cdmi.BackEndException;
 import org.indigo.cdmi.BackendCapability;
-import org.indigo.cdmi.BackendCapability.CapabilityType;
 import org.indigo.cdmi.CdmiObjectStatus;
+import org.indigo.cdmi.PermissionDeniedBackEndException;
 import org.indigo.cdmi.spi.StorageBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.grid.storm.cdmi.config.Organization;
+import it.grid.storm.cdmi.auth.AuthorizationException;
+import it.grid.storm.cdmi.auth.AuthorizationManager;
+import it.grid.storm.cdmi.auth.User;
+import it.grid.storm.cdmi.auth.UserProvider;
+import it.grid.storm.cdmi.auth.UserProviderException;
+import it.grid.storm.cdmi.auth.impl.DefaultAuthorizationManager;
+import it.grid.storm.cdmi.auth.impl.SecurityContextUserProvider;
+import it.grid.storm.cdmi.capability.CapabilityManager;
+import it.grid.storm.cdmi.capability.impl.DefaultCapabilityManager;
 import it.grid.storm.cdmi.config.PluginConfiguration;
-import it.grid.storm.cdmi.config.StormCapabilities;
-import it.grid.storm.gateway.SimpleUser;
+import it.grid.storm.cdmi.config.StormBackendCapability;
+import it.grid.storm.cdmi.config.VirtualOrganization;
 import it.grid.storm.gateway.StormBackendGateway;
 import it.grid.storm.gateway.model.BackendGateway;
 import it.grid.storm.gateway.model.BackendGatewayException;
@@ -37,33 +41,32 @@ public class StormStorageBackend implements StorageBackend {
 
   private static final Logger log = LoggerFactory.getLogger(StormStorageBackend.class);
 
-  private static final String BASE_CONTAINER = "/cdmi_capabilities/container";
-  private static final String BASE_DATAOBJECT = "/cdmi_capabilities/dataobject";
-
-  public static enum CapabilityClasses {
-    DiskOnly, DiskAndTape, TapeOnly
-  }
-
   private List<BackendCapability> backendCapabilities;
   private BackendGateway backendGateway;
-  private Organization organization;
-  private Map<String, Object> containerCapabilities;
-  private Map<String, Map<String, Object>> exportAttributes;
+  private AuthorizationManager authManager;
+  private UserProvider userProvider;
+  private List<VirtualOrganization> organizations;
+
+  private CapabilityManager<StoriMetadata> capManager;
+  private Map<String, Object> exportAttributes;
 
   /**
    * Constructor.
    * 
    */
-  public StormStorageBackend(PluginConfiguration config, StormCapabilities capabilities) {
+  public StormStorageBackend(PluginConfiguration config, List<StormBackendCapability> capabilities,
+      Map<String, Object> exports) {
 
     Preconditions.checkNotNull(config, "Invalid null plugin configuration");
     Preconditions.checkNotNull(capabilities, "Invalid null capabilities configuration");
-    containerCapabilities = capabilities.getContainerCapabilities();
-    exportAttributes = capabilities.getContainerExports();
     backendCapabilities = buildBackendCapabilities(capabilities);
     backendGateway = new StormBackendGateway(config.getBackend().getHostname(),
         config.getBackend().getPort(), config.getBackend().getToken());
-    organization = config.getOrganization();
+    organizations = config.getVos();
+    authManager = new DefaultAuthorizationManager(organizations);
+    userProvider = new SecurityContextUserProvider();
+    capManager = new DefaultCapabilityManager(backendCapabilities);
+    exportAttributes = exports;
   }
 
   /**
@@ -77,6 +80,18 @@ public class StormStorageBackend implements StorageBackend {
     this.backendGateway = backendGateway;
   }
 
+  public void setAuthorizationManager(AuthorizationManager authManager) {
+
+    Preconditions.checkNotNull(authManager, "Invalid null authorization manager");
+    this.authManager = authManager;
+  }
+
+  public void setUserProvider(UserProvider userProvider) {
+
+    Preconditions.checkNotNull(userProvider, "Invalid null user provider");
+    this.userProvider = userProvider;
+  }
+
   @Override
   public List<BackendCapability> getCapabilities() throws BackEndException {
 
@@ -86,26 +101,28 @@ public class StormStorageBackend implements StorageBackend {
   @Override
   public CdmiObjectStatus getCurrentStatus(String path) throws BackEndException {
 
+    User user = retrieveUserIfCanRead(path);
+
     if (isRootPath(path)) {
 
       log.debug("Root path requested ...");
       return getRootCdmiObjectStatus();
     }
 
-    StoriMetadata meta = backendGateway.getStoriMetadata(new SimpleUser("cdmi"), path);
+    StoriMetadata meta = backendGateway.getStoriMetadata(user, path);
     log.debug("StoRIMetadata: {}", meta);
 
-    BackendCapability cap = getBackendCapability(meta);
+    BackendCapability cap = capManager.getBackendCapability(meta);
     log.debug("BackendCapability: {}", cap);
 
-    String currentCapabilitiesUri = getCapabilityUri(cap);
-    String targetCapabilitiesUri = getTargetCapabilityUri(cap, meta);
+    String currentCapabilitiesUri = capManager.getCapabilityUri(cap.getType(), cap.getName());
+    String targetCapabilitiesUri = capManager.getTargetCapabilityUri(cap, meta);
 
-    CdmiObjectStatus currentStatus =
-        new CdmiObjectStatus(cap.getCapabilities(), currentCapabilitiesUri, targetCapabilitiesUri);
+    CdmiObjectStatus currentStatus = new CdmiObjectStatus(getProvidedMetadata(cap),
+        currentCapabilitiesUri, targetCapabilitiesUri);
 
     currentStatus.setChildren(meta.getChildren());
-    currentStatus.setExportAttributes(getExportAttributes(path));
+    currentStatus.setExportAttributes(exportAttributes);
 
     return currentStatus;
   }
@@ -115,42 +132,29 @@ public class StormStorageBackend implements StorageBackend {
     return path.isEmpty() || path.equals("/");
   }
 
-  private CdmiObjectStatus getRootCdmiObjectStatus() {
+  private Map<String, Object> getProvidedMetadata(BackendCapability cap) {
 
-    String currentCapabilitiesUri = getCapabilityUri(CONTAINER, DiskOnly);
-    CdmiObjectStatus currentStatus =
-        new CdmiObjectStatus(containerCapabilities, currentCapabilitiesUri, null);
-    currentStatus.setChildren(organization.getPaths());
-    currentStatus.setExportAttributes(getExportAttributes("/"));
-    return currentStatus;
+    Map<String, Object> metadata = new HashMap<String, Object>();
+    for (String key : cap.getMetadata().keySet()) {
+      metadata.put(key + "_provided", cap.getMetadata().get(key));
+    }
+    return metadata;
   }
 
-  private Map<String, Object> getExportAttributes(String path) {
+  private CdmiObjectStatus getRootCdmiObjectStatus() {
 
-    Map<String, Object> out = new HashMap<String, Object>();
+    BackendCapability cap = capManager.getBackendCapability(CONTAINER, "DiskOnly");
+    String currentCapabilitiesUri = capManager.getCapabilityUri(CONTAINER, "DiskOnly");
 
-    if (exportAttributes != null) {
-      if (exportAttributes.containsKey("Network/WebDAV")) {
-        Map<String, Object> info = new HashMap<String, Object>();
-        String identifier =
-            exportAttributes.get("Network/WebDAV").get("identifier").toString() + path;
-        identifier = identifier.replaceAll("(?<!(http:|https:))[//]+", "/");
-        info.put("identifier", identifier);
-        info.put("permissions", exportAttributes.get("Network/WebDAV").get("permissions"));
-        out.put("Network/WebDAV", info);
-      }
-
-      if (exportAttributes.containsKey("Network/SRM")) {
-        Map<String, Object> info = new HashMap<String, Object>();
-        String identifier = exportAttributes.get("Network/SRM").get("identifier").toString() + path;
-        identifier = identifier.replaceAll("(?<!(srm:|httpg:))[//]+", "/");
-        info.put("identifier", identifier);
-        info.put("permissions", exportAttributes.get("Network/SRM").get("permissions"));
-        out.put("Network/SRM", info);
-      }
+    CdmiObjectStatus currentStatus =
+        new CdmiObjectStatus(getProvidedMetadata(cap), currentCapabilitiesUri, null);
+    List<String> children = Lists.newArrayList();
+    for (VirtualOrganization vo : organizations) {
+      children.add(vo.getPath());
     }
-
-    return out;
+    currentStatus.setChildren(children);
+    currentStatus.setExportAttributes(exportAttributes);
+    return currentStatus;
   }
 
   @Override
@@ -158,10 +162,12 @@ public class StormStorageBackend implements StorageBackend {
 
     log.info("Updating {} to QoS {} ... ", path, targetCapabilitiesUri);
 
-    StoriMetadata meta = backendGateway.getStoriMetadata(new SimpleUser("cdmi"), path);
+    User user = retrieveUserIfCanRecall(path);
+
+    StoriMetadata meta = backendGateway.getStoriMetadata(user, path);
     log.debug("StoRIMetadata: {}", meta);
 
-    BackendCapability cap = getBackendCapability(meta);
+    BackendCapability cap = capManager.getBackendCapability(meta);
     log.debug("BackendCapability: {}", cap);
 
     if (cap.getType().equals(CONTAINER)) {
@@ -170,7 +176,14 @@ public class StormStorageBackend implements StorageBackend {
       throw new BackEndException("Containers QoS cannot change");
     }
 
-    String currentTargetCapabilitiesUri = getTargetCapabilityUri(cap, meta);
+    if (!capManager.isAllowedToMove(cap, targetCapabilitiesUri)) {
+
+      log.debug("{} cannot change its QoS from {} to {}", path, cap.getName(),
+          targetCapabilitiesUri);
+      throw new BackEndException("QoS change not allowed");
+    }
+
+    String currentTargetCapabilitiesUri = capManager.getTargetCapabilityUri(cap, meta);
 
     if (currentTargetCapabilitiesUri != null) {
 
@@ -182,26 +195,8 @@ public class StormStorageBackend implements StorageBackend {
       throw new BackEndException("Already in transition to another capability");
     }
 
-    if (!cap.getMetadata().containsKey("cdmi_capabilities_allowed")) {
-      throw new BackEndException("No transitions allowed from current capability");
-    }
-
-    boolean isAllowed = false;
-    List<String> caps = getCapabilitiesAllowed(cap);
-    for (String target : caps) {
-      if (target.equals(targetCapabilitiesUri)) {
-        isAllowed = true;
-        break;
-      }
-    }
-
-    if (!isAllowed) {
-      throw new BackEndException(
-          "Transition to " + targetCapabilitiesUri + " not allowed from current QoS!");
-    }
-
     try {
-      backendGateway.addRecallTask(new SimpleUser("cdmi"), path);
+      backendGateway.addRecallTask(user, path);
     } catch (BackendGatewayException e) {
       throw new BackEndException(e.getMessage(), e);
     }
@@ -209,69 +204,33 @@ public class StormStorageBackend implements StorageBackend {
     log.info("Transition to {} started successful for {}", targetCapabilitiesUri, path);
   }
 
-  private BackendCapability getBackendCapability(StoriMetadata metadata) {
-
-    if (metadata.getType().equals(FOLDER)) {
-      return backendCapabilities.stream()
-          .filter(
-              cap -> cap.getType().equals(CONTAINER) && cap.getName().equals(DiskOnly.toString()))
-          .findFirst().get();
-    }
-    if (metadata.getStatus().equals(ONLINE)) {
-      if (metadata.getAttributes().getMigrated()) {
-        return backendCapabilities.stream().filter(
-            cap -> cap.getType().equals(DATAOBJECT) && cap.getName().equals(DiskAndTape.toString()))
-            .findFirst().get();
-      }
-      return backendCapabilities.stream()
-          .filter(
-              cap -> cap.getType().equals(DATAOBJECT) && cap.getName().equals(DiskOnly.toString()))
-          .findFirst().get();
-    }
-    return backendCapabilities.stream()
-        .filter(
-            cap -> cap.getType().equals(DATAOBJECT) && cap.getName().equals(TapeOnly.toString()))
-        .findFirst().get();
-  }
-
-  public static String getTargetCapabilityUri(BackendCapability cap, StoriMetadata metadata) {
-
-    if (cap.getType().equals(DATAOBJECT)) {
-      if (cap.getName().equals(TapeOnly.toString())) {
-        String recTasks = metadata.getAttributes().getTsmRecT();
-        if (recTasks != null) {
-          if (!recTasks.isEmpty()) {
-            return getCapabilityUri(DATAOBJECT, DiskAndTape);
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  public static String getCapabilityUri(BackendCapability cap) {
-
-    return getCapabilityUri(cap.getType(), CapabilityClasses.valueOf(cap.getName()));
-  }
-
-  public static String getCapabilityUri(CapabilityType type, CapabilityClasses name) {
-
-    if (type.equals(DATAOBJECT)) {
-      return BASE_DATAOBJECT + "/" + name.toString();
-    }
-    return BASE_CONTAINER + "/" + name.toString();
-  }
-
-  @SuppressWarnings("unchecked")
-  public static List<String> getCapabilitiesAllowed(BackendCapability cap) throws BackEndException {
-
-    List<String> caps = null;
+  private User retrieveUserIfCanRead(String path) throws BackEndException {
+  
+    User user = null;
     try {
-      caps = (List<String>) cap.getMetadata().get("cdmi_capabilities_allowed");
-    } catch (ClassCastException e) {
-      throw new BackEndException("Unable to read cdmi_capabilities_allowed: not a List");
+      user = userProvider.getUser();
+      authManager.canRead(user, path);
+    } catch (AuthorizationException | UserProviderException e) {
+      throw new PermissionDeniedBackEndException(e);
+    } catch (IOException e) {
+      log.error(e.getMessage());
+      throw new BackEndException(e);
     }
-    return caps;
+    return user;
   }
 
+  private User retrieveUserIfCanRecall(String path) throws BackEndException {
+    
+    User user = null;
+    try {
+      user = userProvider.getUser();
+      authManager.canRecall(user, path);
+    } catch (AuthorizationException | UserProviderException e) {
+      throw new PermissionDeniedBackEndException(e);
+    } catch (IOException e) {
+      log.error(e.getMessage());
+      throw new BackEndException(e);
+    }
+    return user;
+  }
 }

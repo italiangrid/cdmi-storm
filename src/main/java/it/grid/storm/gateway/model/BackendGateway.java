@@ -1,5 +1,6 @@
 package it.grid.storm.gateway.model;
 
+import it.grid.storm.cdmi.auth.User;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 
 public interface BackendGateway {

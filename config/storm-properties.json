@@ -4,10 +4,13 @@
 		"port": 9998,
 		"token": "{your-xmlrpc-token}"
 	},
-	"organization": {
-		"name": "test.vo",
-		"paths": [
-			"/test.vo"
-		]
-	}
+	"vos": [
+        {
+            "name": "test.vo",
+            "read-scope": "testvo:read",
+            "recall-scope": "testvo:recall",
+            "iam-group": "test.vo-users",
+            "path": "/test.vo"
+        }
+    ]
 }

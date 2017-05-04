@@ -3,11 +3,21 @@
         "hostname": "test-hostname.local.io",
         "port": 9998,
         "token": "testtoken"
+    },
+    "vos": [
+        {
+            "name": "test.vo",
+            "read-scope": "testvo:read",
+            "recall-scope": "testvo:recall",
+            "iam-group": "test.vo-users",
+            "path": "/test.vo"
         },
-    "organization": {
-        "name": "test.vo",
-        "paths": [
-            "/test.vo"
-        ]
-    }
+        {
+            "name": "cms",
+            "read-scope": "cms:read",
+            "recall-scope": "cms:recall",
+            "iam-group": "cms-users",
+            "path": "/cms"
+        }
+    ]
 }
