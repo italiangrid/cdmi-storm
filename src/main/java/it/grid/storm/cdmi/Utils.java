@@ -1,11 +1,11 @@
 package it.grid.storm.cdmi;
 
+import it.grid.storm.cdmi.config.StormBackendCapability;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.indigo.cdmi.BackendCapability;
-
-import it.grid.storm.cdmi.config.StormBackendCapability;
 
 public class Utils {
 
@@ -15,12 +15,13 @@ public class Utils {
    * @param configCapabilities The @List of the configured @StormBackendCapability.
    * @return the list of @BackendCapability
    */
-  public static List<BackendCapability> buildBackendCapabilities(List<StormBackendCapability> configCapabilities) {
+  public static List<BackendCapability> buildBackendCapabilities(
+      List<StormBackendCapability> configCapabilities) {
 
     List<BackendCapability> capabilities = new ArrayList<BackendCapability>();
 
-    for (StormBackendCapability cap: configCapabilities) {
-      
+    for (StormBackendCapability cap : configCapabilities) {
+
       BackendCapability bc = new BackendCapability(cap.getName(), cap.getType());
       bc.setMetadata(cap.getMetadata());
       bc.setCapabilities(cap.getCapabilities());

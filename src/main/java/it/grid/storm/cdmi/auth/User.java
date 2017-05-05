@@ -4,16 +4,16 @@ import java.util.List;
 
 public interface User {
 
-	public String getUserId();
+  public String getUserId();
 
-	public List<String> getScopes();
+  public List<String> getScopes();
 
-	public boolean hasScope(String scope);
+  public boolean hasScope(String scope);
 
-	public List<String> getGroups();
+  public List<String> getGroups();
 
-	public boolean hasGroup(String group);
+  public boolean hasGroup(String group);
 
-	public String getOrganizationName();
+  public String getOrganizationName();
 
 }

@@ -2,13 +2,13 @@ package it.grid.storm.cdmi.auth.impl;
 
 import com.google.common.collect.Lists;
 
+import it.grid.storm.cdmi.auth.User;
+
 import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
-import it.grid.storm.cdmi.auth.User;
 
 public class IamUser implements User {
 
@@ -17,6 +17,11 @@ public class IamUser implements User {
   private List<String> groups;
   private String organization;
 
+  /**
+   * Constructor.
+   * 
+   * @param auth Build @IamUser from details of @UsernamePasswordAuthenticationToken auth.
+   */
   public IamUser(UsernamePasswordAuthenticationToken auth) {
 
     try {
@@ -25,7 +30,8 @@ public class IamUser implements User {
 
       this.sub = authDetails.getJSONObject("userinfo").getString("sub");
       this.groups = Lists.newArrayList();
-      authDetails.getJSONObject("userinfo").getJSONArray("groups").forEach(g -> this.groups.add(g.toString()));
+      authDetails.getJSONObject("userinfo").getJSONArray("groups")
+          .forEach(g -> this.groups.add(g.toString()));
       this.scopes = Lists.newArrayList();
       String scopesStr = authDetails.getJSONObject("tokeninfo").getString("scope");
       if (!scopesStr.isEmpty()) {

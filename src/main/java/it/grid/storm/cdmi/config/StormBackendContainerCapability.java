@@ -2,8 +2,8 @@ package it.grid.storm.cdmi.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
@@ -17,7 +17,6 @@ public class StormBackendContainerCapability extends StormBackendCapability {
    * 
    * @param capabilities List of enabled container capabilities.
    * @param metadata List of provided capabilities static values.
-   * @param export List of export end-points.
    */
   @JsonCreator
   public StormBackendContainerCapability(

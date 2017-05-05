@@ -1,13 +1,21 @@
 package it.grid.storm.cdmi.auth.impl;
 
+import it.grid.storm.cdmi.config.VirtualOrganization;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import it.grid.storm.cdmi.config.VirtualOrganization;
-
 public class PathUtils {
 
+  /**
+   * Find the best VirtualOrganization which fit path.
+   * 
+   * @param vos @List of @VirtualOrganization to parse.
+   * @param path The path to check if supported.
+   * @return The @VirtualOrganization within the path is.
+   * @throws IOException In case of IO problems.
+   */
   public static VirtualOrganization getVirtualOrganizationFromPath(List<VirtualOrganization> vos,
       String path) throws IOException {
 
@@ -30,6 +38,14 @@ public class PathUtils {
     return vo;
   }
 
+  /**
+   * Check if child is contained in a sub-directory of base.
+   * 
+   * @param base File path to check if contains child.
+   * @param child File path to check.
+   * @return True if child has base within its parents.
+   * @throws IOException In case of IO problems.
+   */
   public static boolean isSubDirectory(File base, File child) throws IOException {
 
     base = base.getCanonicalFile();

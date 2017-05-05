@@ -92,7 +92,8 @@ public class StormBackendGateway implements BackendGateway {
 
     log.debug("GET {} as {}", path, user.getUserId());
 
-    TaskInsertRequest request = TaskInsertRequest.builder().userId(user.getUserId()).stfn(path).build();
+    TaskInsertRequest request =
+        TaskInsertRequest.builder().userId(user.getUserId()).stfn(path).build();
     log.debug("Request: {}", request);
 
     ObjectMapper mapper = new ObjectMapper();

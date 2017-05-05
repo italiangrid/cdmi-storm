@@ -11,6 +11,14 @@ public class StormBackendCapability {
   private Map<String, Object> capabilities;
   private Map<String, Object> metadata;
 
+  /**
+   * Constructor.
+   * 
+   * @param name Capability name.
+   * @param type Capability type (container or data-object).
+   * @param capabilities Set of enabled capabilities.
+   * @param metadata Map of capabilities provided values.
+   */
   public StormBackendCapability(String name, CapabilityType type, Map<String, Object> capabilities,
       Map<String, Object> metadata) {
 

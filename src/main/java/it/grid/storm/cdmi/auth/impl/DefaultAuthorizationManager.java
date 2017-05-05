@@ -2,16 +2,16 @@ package it.grid.storm.cdmi.auth.impl;
 
 import com.google.common.base.Preconditions;
 
+import it.grid.storm.cdmi.auth.AuthorizationException;
+import it.grid.storm.cdmi.auth.AuthorizationManager;
+import it.grid.storm.cdmi.auth.User;
+import it.grid.storm.cdmi.config.VirtualOrganization;
+
 import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import it.grid.storm.cdmi.auth.AuthorizationException;
-import it.grid.storm.cdmi.auth.AuthorizationManager;
-import it.grid.storm.cdmi.auth.User;
-import it.grid.storm.cdmi.config.VirtualOrganization;
 
 public class DefaultAuthorizationManager implements AuthorizationManager {
 
@@ -37,8 +37,8 @@ public class DefaultAuthorizationManager implements AuthorizationManager {
     boolean authorized = u.hasScope(vo.getReadScope()) || u.hasGroup(vo.getIamGroup());
 
     if (!authorized) {
-        throw new AuthorizationException(
-            "Missing scope " + vo.getReadScope() + " or group " + vo.getIamGroup());
+      throw new AuthorizationException(
+          "Missing scope " + vo.getReadScope() + " or group " + vo.getIamGroup());
     }
 
     log.debug("user {} is authorized to read path {}", u.getUserId(), path);
@@ -57,8 +57,8 @@ public class DefaultAuthorizationManager implements AuthorizationManager {
     boolean authorized = u.hasScope(vo.getRecallScope()) || u.hasGroup(vo.getIamGroup());
 
     if (!authorized) {
-        throw new AuthorizationException(
-            "Missing scope " + vo.getRecallScope() + " or group " + vo.getIamGroup());
+      throw new AuthorizationException(
+          "Missing scope " + vo.getRecallScope() + " or group " + vo.getIamGroup());
     }
 
     log.debug("user {} is authorized to recall path {}", u.getUserId(), path);

@@ -18,7 +18,10 @@ public class VirtualOrganization {
    * Constructor.
    * 
    * @param name Virtual File-system name.
-   * @param paths The list of access points.
+   * @param path The access point.
+   * @param readScope The OIDC scope used to be authorized to read.
+   * @param recallScope The OIDC scope used to be authorized to recall.
+   * @param iamGroup The OIDC group used to be authorized to read/recall.
    */
   @JsonCreator
   public VirtualOrganization(@JsonProperty("name") String name, @JsonProperty("path") String path,

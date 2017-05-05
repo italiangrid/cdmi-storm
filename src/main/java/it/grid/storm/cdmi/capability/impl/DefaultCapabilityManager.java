@@ -5,13 +5,13 @@ import static it.grid.storm.rest.metadata.model.StoriMetadata.ResourceType.FOLDE
 import static org.indigo.cdmi.BackendCapability.CapabilityType.CONTAINER;
 import static org.indigo.cdmi.BackendCapability.CapabilityType.DATAOBJECT;
 
+import it.grid.storm.cdmi.capability.CapabilityManager;
+import it.grid.storm.rest.metadata.model.StoriMetadata;
+
 import java.util.List;
 
 import org.indigo.cdmi.BackendCapability;
 import org.indigo.cdmi.BackendCapability.CapabilityType;
-
-import it.grid.storm.cdmi.capability.CapabilityManager;
-import it.grid.storm.rest.metadata.model.StoriMetadata;
 
 public class DefaultCapabilityManager implements CapabilityManager<StoriMetadata> {
 
@@ -33,6 +33,21 @@ public class DefaultCapabilityManager implements CapabilityManager<StoriMetadata
   }
 
   @Override
+  public BackendCapability getBackendCapability(StoriMetadata metadata) {
+
+    if (metadata.getType().equals(FOLDER)) {
+      return getBackendCapability(CONTAINER, "DiskOnly");
+    }
+    if (metadata.getStatus().equals(ONLINE)) {
+      if (metadata.getAttributes().getMigrated()) {
+        return getBackendCapability(DATAOBJECT, "DiskAndTape");
+      }
+      return getBackendCapability(DATAOBJECT, "DiskOnly");
+    }
+    return getBackendCapability(DATAOBJECT, "TapeOnly");
+  }
+
+  @Override
   public String getTargetCapabilityUri(BackendCapability cap, StoriMetadata metadata) {
 
     if (cap.getType().equals(DATAOBJECT) && cap.getName().equals("TapeOnly")) {
@@ -50,27 +65,19 @@ public class DefaultCapabilityManager implements CapabilityManager<StoriMetadata
     return buildCapabilityUri(type, capName);
   }
 
+  /**
+   * Build capability URI from capability type and name.
+   * 
+   * @param type The capability type.
+   * @param capName The capability name.
+   * @return The capability URI.
+   */
   public static String buildCapabilityUri(CapabilityType type, String capName) {
 
     if (type.equals(DATAOBJECT)) {
       return BASE_DATAOBJECT + "/" + capName;
     }
     return BASE_CONTAINER + "/" + capName;
-  }
-
-  @Override
-  public BackendCapability getBackendCapability(StoriMetadata metadata) {
-
-    if (metadata.getType().equals(FOLDER)) {
-      return getBackendCapability(CONTAINER, "DiskOnly");
-    }
-    if (metadata.getStatus().equals(ONLINE)) {
-      if (metadata.getAttributes().getMigrated()) {
-        return getBackendCapability(DATAOBJECT, "DiskAndTape");
-      }
-      return getBackendCapability(DATAOBJECT, "DiskOnly");
-    }
-    return getBackendCapability(DATAOBJECT, "TapeOnly");
   }
 
   @Override

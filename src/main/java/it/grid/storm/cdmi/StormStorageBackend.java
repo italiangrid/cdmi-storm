@@ -6,19 +6,6 @@ import static org.indigo.cdmi.BackendCapability.CapabilityType.CONTAINER;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.indigo.cdmi.BackEndException;
-import org.indigo.cdmi.BackendCapability;
-import org.indigo.cdmi.CdmiObjectStatus;
-import org.indigo.cdmi.PermissionDeniedBackEndException;
-import org.indigo.cdmi.spi.StorageBackend;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import it.grid.storm.cdmi.auth.AuthorizationException;
 import it.grid.storm.cdmi.auth.AuthorizationManager;
 import it.grid.storm.cdmi.auth.User;
@@ -36,6 +23,18 @@ import it.grid.storm.gateway.model.BackendGateway;
 import it.grid.storm.gateway.model.BackendGatewayException;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.indigo.cdmi.BackEndException;
+import org.indigo.cdmi.BackendCapability;
+import org.indigo.cdmi.CdmiObjectStatus;
+import org.indigo.cdmi.PermissionDeniedBackEndException;
+import org.indigo.cdmi.spi.StorageBackend;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StormStorageBackend implements StorageBackend {
 
@@ -80,12 +79,22 @@ public class StormStorageBackend implements StorageBackend {
     this.backendGateway = backendGateway;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param authManager The @AuthorizationManager implementation to set.
+   */
   public void setAuthorizationManager(AuthorizationManager authManager) {
 
     Preconditions.checkNotNull(authManager, "Invalid null authorization manager");
     this.authManager = authManager;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param userProvider The @UserProvider implementation to set.
+   */
   public void setUserProvider(UserProvider userProvider) {
 
     Preconditions.checkNotNull(userProvider, "Invalid null user provider");
