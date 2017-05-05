@@ -10,8 +10,6 @@ public class AuthUtils {
   public static UsernamePasswordAuthenticationToken getToken(String sub, String scopes,
       List<String> groups, String voName) {
 
-    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(sub, null);
-
     JSONObject userinfo = new JSONObject();
     userinfo.put("sub", sub);
     userinfo.put("groups", groups);
@@ -23,6 +21,8 @@ public class AuthUtils {
     JSONObject details = new JSONObject();
     details.put("userinfo", userinfo);
     details.put("tokeninfo", tokeninfo);
+
+    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(sub, null);
     auth.setDetails(details.toString());
     return auth;
   }
