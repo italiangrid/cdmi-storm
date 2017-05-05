@@ -109,13 +109,13 @@ public class StormStorageBackend implements StorageBackend {
   @Override
   public CdmiObjectStatus getCurrentStatus(String path) throws BackEndException {
 
-    User user = retrieveUserIfCanRead(path);
-
     if (isRootPath(path)) {
 
       log.debug("Root path requested ...");
       return getRootCdmiObjectStatus();
     }
+
+    User user = retrieveUserIfCanRead(path);
 
     StoriMetadata meta = backendGateway.getStoriMetadata(user, path);
     log.debug("StoRIMetadata: {}", meta);
