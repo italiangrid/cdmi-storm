@@ -1,8 +1,6 @@
 {
-    "exports": {
-        "Network/WebHTTP": {
-            "identifier": "http://localhost/cdmi/browse",
-            "permissions": "oidc"
-        }
+    "Network/WebHTTP": {
+        "identifier": "http://localhost/cdmi/browse",
+        "permissions": "oidc"
     }
 }
