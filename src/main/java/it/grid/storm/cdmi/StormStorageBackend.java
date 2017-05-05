@@ -6,6 +6,18 @@ import static org.indigo.cdmi.BackendCapability.CapabilityType.CONTAINER;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import org.indigo.cdmi.BackEndException;
+import org.indigo.cdmi.BackendCapability;
+import org.indigo.cdmi.CdmiObjectStatus;
+import org.indigo.cdmi.PermissionDeniedBackEndException;
+import org.indigo.cdmi.spi.StorageBackend;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import it.grid.storm.cdmi.auth.AuthorizationException;
 import it.grid.storm.cdmi.auth.AuthorizationManager;
 import it.grid.storm.cdmi.auth.User;
@@ -22,19 +34,6 @@ import it.grid.storm.gateway.StormBackendGateway;
 import it.grid.storm.gateway.model.BackendGateway;
 import it.grid.storm.gateway.model.BackendGatewayException;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.indigo.cdmi.BackEndException;
-import org.indigo.cdmi.BackendCapability;
-import org.indigo.cdmi.CdmiObjectStatus;
-import org.indigo.cdmi.PermissionDeniedBackEndException;
-import org.indigo.cdmi.spi.StorageBackend;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class StormStorageBackend implements StorageBackend {
 
@@ -127,8 +126,8 @@ public class StormStorageBackend implements StorageBackend {
     String currentCapabilitiesUri = capManager.getCapabilityUri(cap.getType(), cap.getName());
     String targetCapabilitiesUri = capManager.getTargetCapabilityUri(cap, meta);
 
-    CdmiObjectStatus currentStatus = new CdmiObjectStatus(getProvidedMetadata(cap),
-        currentCapabilitiesUri, targetCapabilitiesUri);
+    CdmiObjectStatus currentStatus =
+        new CdmiObjectStatus(cap.getMetadata(), currentCapabilitiesUri, targetCapabilitiesUri);
 
     currentStatus.setChildren(meta.getChildren());
     currentStatus.setExportAttributes(exportAttributes);
@@ -141,22 +140,13 @@ public class StormStorageBackend implements StorageBackend {
     return path.isEmpty() || path.equals("/");
   }
 
-  private Map<String, Object> getProvidedMetadata(BackendCapability cap) {
-
-    Map<String, Object> metadata = new HashMap<String, Object>();
-    for (String key : cap.getMetadata().keySet()) {
-      metadata.put(key + "_provided", cap.getMetadata().get(key));
-    }
-    return metadata;
-  }
-
   private CdmiObjectStatus getRootCdmiObjectStatus() {
 
     BackendCapability cap = capManager.getBackendCapability(CONTAINER, "DiskOnly");
     String currentCapabilitiesUri = capManager.getCapabilityUri(CONTAINER, "DiskOnly");
 
     CdmiObjectStatus currentStatus =
-        new CdmiObjectStatus(getProvidedMetadata(cap), currentCapabilitiesUri, null);
+        new CdmiObjectStatus(cap.getMetadata(), currentCapabilitiesUri, null);
     List<String> children = Lists.newArrayList();
     for (VirtualOrganization vo : organizations) {
       children.add(vo.getPath());
@@ -214,7 +204,7 @@ public class StormStorageBackend implements StorageBackend {
   }
 
   private User retrieveUserIfCanRead(String path) throws BackEndException {
-  
+
     User user = null;
     try {
       user = userProvider.getUser();
@@ -229,7 +219,7 @@ public class StormStorageBackend implements StorageBackend {
   }
 
   private User retrieveUserIfCanRecall(String path) throws BackEndException {
-    
+
     User user = null;
     try {
       user = userProvider.getUser();
