@@ -8,6 +8,12 @@ import static org.junit.Assert.assertThat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import it.grid.storm.cdmi.auth.User;
+import it.grid.storm.gateway.model.BackendGateway;
+import it.grid.storm.gateway.model.BackendGatewayException;
+import it.grid.storm.rest.metadata.model.FileAttributes;
+import it.grid.storm.rest.metadata.model.StoriMetadata;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -22,22 +28,16 @@ import org.apache.http.message.BasicStatusLine;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import it.grid.storm.cdmi.auth.User;
-import it.grid.storm.gateway.model.BackendGateway;
-import it.grid.storm.gateway.model.BackendGatewayException;
-import it.grid.storm.rest.metadata.model.FileAttributes;
-import it.grid.storm.rest.metadata.model.StoriMetadata;
-
 public class StormBackendGatewayTest {
 
-  private final static String FILE_STFN_PATH = "/metadata/test.vo/test.txt";
-  private final static String FILE_ABSOLUTE_PATH = "/tmp/test.vo/test.txt";
+  private static final String FILE_STFN_PATH = "/metadata/test.vo/test.txt";
+  private static final String FILE_ABSOLUTE_PATH = "/tmp/test.vo/test.txt";
 
-  private final static String HOSTNAME = "dev.local.io";
-  private final static int PORT = 9998;
-  private final static String TOKEN = "MY_SECRET_TOKEN";
+  private static final String HOSTNAME = "dev.local.io";
+  private static final int PORT = 9998;
+  private static final String TOKEN = "MY_SECRET_TOKEN";
 
-  private final static User USER = getUser("cdmi");
+  private static final User USER = getUser("cdmi");
 
   private HttpClient getHttpClient() {
     HttpClient client = Mockito.mock(HttpClient.class);
@@ -45,12 +45,12 @@ public class StormBackendGatewayTest {
   }
 
   private static User getUser(String id) {
-  	User user = Mockito.mock(User.class);
-  	Mockito.when(user.getUserId()).thenReturn(id);
-		return user;
-	}
+    User user = Mockito.mock(User.class);
+    Mockito.when(user.getUserId()).thenReturn(id);
+    return user;
+  }
 
-	private HttpResponse getSuccessGetMetadataResponse(StoriMetadata meta)
+  private HttpResponse getSuccessGetMetadataResponse(StoriMetadata meta)
       throws UnsupportedEncodingException, JsonProcessingException {
 
     ObjectMapper mapper = new ObjectMapper();
@@ -81,7 +81,7 @@ public class StormBackendGatewayTest {
     return client;
   }
 
-  private HttpClient getHttpClientMetadataIOException()
+  private HttpClient getHttpClientMetadataIoException()
       throws ClientProtocolException, IOException {
 
     HttpClient client = getHttpClient();
@@ -131,8 +131,7 @@ public class StormBackendGatewayTest {
         .build();
     HttpClient client = getHttpClientMetadataSuccess(meta);
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
-    StoriMetadata metaOut =
-        gateway.getStoriMetadata(USER, FILE_STFN_PATH.substring(1));
+    StoriMetadata metaOut = gateway.getStoriMetadata(USER, FILE_STFN_PATH.substring(1));
     assertThat(metaOut.getAbsolutePath(), equalTo(meta.getAbsolutePath()));
     assertThat(metaOut.getType(), equalTo(meta.getType()));
   }
@@ -147,9 +146,9 @@ public class StormBackendGatewayTest {
   }
 
   @Test(expected = BackendGatewayException.class)
-  public void testGetMetadataIOException() throws ClientProtocolException, IOException {
+  public void testGetMetadataIoException() throws ClientProtocolException, IOException {
 
-    HttpClient client = getHttpClientMetadataIOException();
+    HttpClient client = getHttpClientMetadataIoException();
     BackendGateway gateway = new StormBackendGateway(client, HOSTNAME, PORT, TOKEN);
     gateway.getStoriMetadata(USER, FILE_STFN_PATH);
   }

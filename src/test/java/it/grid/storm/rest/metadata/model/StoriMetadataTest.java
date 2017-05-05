@@ -20,41 +20,41 @@ public class StoriMetadataTest {
   private ObjectMapper mapper = new ObjectMapper();
   private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm a z");
 
-  private final String ABSOLUTE_PATH = "/storage/test.vo/test.txt";
-  private final String VFS_NAME = "TESTVO-FS";
-  private final String VFS_ROOT = "/storage/test.vo";
-  private final String LAST_MODIFIED = "2017-03-09 16:40 PM UTC";
-  private final boolean MIGRATED = false;
-  private final boolean PREMIGRATED = true;
-  private final boolean PINNED = true;
-  private final String CHECKSUM = "Adler32:912389012";
-  private final long TSMRECD = 11000000;
-  private final String TSMRECT = "TaskId1";
-  private final int TSMRECR = 0;
+  private final String absolutePath = "/storage/test.vo/test.txt";
+  private final String vfsName = "TESTVO-FS";
+  private final String vfsRoot = "/storage/test.vo";
+  private final String lastModified = "2017-03-09 16:40 PM UTC";
+  private final boolean migrated = false;
+  private final boolean premigrated = true;
+  private final boolean pinned = true;
+  private final String checksum = "Adler32:912389012";
+  private final long tsmRecD = 11000000;
+  private final String tsmRecT = "TaskId1";
+  private final int tsmRecR = 0;
 
   @Test
   public void testReadStoriMetadataFromFile() throws IOException, ParseException {
 
     String filePath = getClass().getClassLoader().getResource("FileMetadata.json").getFile();
     StoriMetadata metadata = mapper.readValue(new File(filePath), StoriMetadata.class);
-    assertThat(metadata.getAbsolutePath(), equalTo(ABSOLUTE_PATH));
+    assertThat(metadata.getAbsolutePath(), equalTo(absolutePath));
     assertThat(metadata.getType(), equalTo(FILE));
     assertThat(metadata.getStatus(), equalTo(ONLINE));
-    assertThat(metadata.getFilesystem().getName(), equalTo(VFS_NAME));
-    assertThat(metadata.getFilesystem().getRoot(), equalTo(VFS_ROOT));
-    assertThat(metadata.getLastModified(), equalTo(dateFormat.parse(LAST_MODIFIED)));
+    assertThat(metadata.getFilesystem().getName(), equalTo(vfsName));
+    assertThat(metadata.getFilesystem().getRoot(), equalTo(vfsRoot));
+    assertThat(metadata.getLastModified(), equalTo(dateFormat.parse(lastModified)));
 
   }
 
   @Test
   public void testStoriMetadataBuilder() throws ParseException, JsonProcessingException {
 
-    StoriMetadata meta = StoriMetadata.builder().absolutePath(ABSOLUTE_PATH)
-        .lastModified(dateFormat.parse(LAST_MODIFIED))
-        .filesystem(VirtualFsMetadata.builder().name(VFS_NAME).root(VFS_ROOT).build())
+    StoriMetadata meta = StoriMetadata.builder().absolutePath(absolutePath)
+        .lastModified(dateFormat.parse(lastModified))
+        .filesystem(VirtualFsMetadata.builder().name(vfsName).root(vfsRoot).build())
         .attributes(
-            FileAttributes.builder().pinned(PINNED).migrated(MIGRATED).premigrated(PREMIGRATED)
-                .checksum(CHECKSUM).tsmRecD(TSMRECD).tsmRecT(TSMRECT).tsmRecR(TSMRECR).build())
+            FileAttributes.builder().pinned(pinned).migrated(migrated).premigrated(premigrated)
+                .checksum(checksum).tsmRecD(tsmRecD).tsmRecT(tsmRecT).tsmRecR(tsmRecR).build())
         .build();
     mapper.writeValueAsString(meta);
   }

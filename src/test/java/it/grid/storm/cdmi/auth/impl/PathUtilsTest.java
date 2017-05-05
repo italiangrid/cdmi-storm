@@ -6,13 +6,13 @@ import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.Lists;
 
+import it.grid.storm.cdmi.config.VirtualOrganization;
+
 import java.io.IOException;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import it.grid.storm.cdmi.config.VirtualOrganization;
 
 public class PathUtilsTest {
 
@@ -23,13 +23,15 @@ public class PathUtilsTest {
 
     vos = Lists.newArrayList();
     vos.add(new VirtualOrganization("test", "/test", "test:read", "test:recall", "test"));
-    vos.add(new VirtualOrganization("subtest", "/test/sub", "subtest:read", "subtest:recall", "subtest"));
+    vos.add(new VirtualOrganization("subtest", "/test/sub", "subtest:read", "subtest:recall",
+        "subtest"));
   }
 
   @Test
   public void testMatchSuccess() throws IOException {
 
-    VirtualOrganization vo = PathUtils.getVirtualOrganizationFromPath(vos, "/test/sub/filename.dat");
+    VirtualOrganization vo =
+        PathUtils.getVirtualOrganizationFromPath(vos, "/test/sub/filename.dat");
     assertNotNull(vo);
     assertThat(vo.getName(), equalTo("subtest"));
   }

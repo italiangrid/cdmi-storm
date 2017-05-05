@@ -1,7 +1,7 @@
 package it.grid.storm.cdmi.config;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -20,7 +20,8 @@ import org.slf4j.LoggerFactory;
 
 public class StormBackendContainerCapabilityTest {
 
-  private static final Logger log = LoggerFactory.getLogger(StormBackendContainerCapabilityTest.class);
+  private static final Logger log =
+      LoggerFactory.getLogger(StormBackendContainerCapabilityTest.class);
 
   static final String name = "DiskOnly";
   static final CapabilityType type = CapabilityType.CONTAINER;
@@ -55,7 +56,8 @@ public class StormBackendContainerCapabilityTest {
   @Test
   public void testLoadFromFile() throws JsonParseException, JsonMappingException, IOException {
 
-    String jsonFile = getClass().getClassLoader().getResource("capabilities/container/diskonly.json").getFile();
+    String jsonFile =
+        getClass().getClassLoader().getResource("capabilities/container/diskonly.json").getFile();
 
     ObjectMapper mapper = new ObjectMapper();
     StormBackendContainerCapability cap =

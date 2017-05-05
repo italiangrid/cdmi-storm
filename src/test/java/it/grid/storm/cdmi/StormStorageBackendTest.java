@@ -16,6 +16,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
+import it.grid.storm.cdmi.auth.AuthorizationException;
+import it.grid.storm.cdmi.auth.AuthorizationManager;
+import it.grid.storm.cdmi.auth.User;
+import it.grid.storm.cdmi.auth.UserProvider;
+import it.grid.storm.cdmi.config.ExportIdentifier;
+import it.grid.storm.cdmi.config.PluginConfiguration;
+import it.grid.storm.cdmi.config.StormBackendCapability;
+import it.grid.storm.cdmi.config.StormBackendContainerCapability;
+import it.grid.storm.cdmi.config.StormBackendDatobjectCapability;
+import it.grid.storm.gateway.model.BackendGateway;
+import it.grid.storm.rest.metadata.model.FileAttributes;
+import it.grid.storm.rest.metadata.model.StoriMetadata;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,28 +43,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import it.grid.storm.cdmi.auth.AuthorizationException;
-import it.grid.storm.cdmi.auth.AuthorizationManager;
-import it.grid.storm.cdmi.auth.User;
-import it.grid.storm.cdmi.auth.UserProvider;
-import it.grid.storm.cdmi.config.ExportIdentifier;
-import it.grid.storm.cdmi.config.PluginConfiguration;
-import it.grid.storm.cdmi.config.StormBackendCapability;
-import it.grid.storm.cdmi.config.StormBackendContainerCapability;
-import it.grid.storm.cdmi.config.StormBackendDatobjectCapability;
-import it.grid.storm.gateway.model.BackendGateway;
-import it.grid.storm.rest.metadata.model.FileAttributes;
-import it.grid.storm.rest.metadata.model.StoriMetadata;
-
 public class StormStorageBackendTest {
 
-  private final static String ROOT_PATH = "/";
+  private static final String ROOT_PATH = "/";
 
-  private final static String FILE_STFN_PATH = "/test.vo/test.txt";
-  private final static String FILE_ABSOLUTE_PATH = "/tmp/test.vo/test.txt";
+  private static final String FILE_STFN_PATH = "/test.vo/test.txt";
+  private static final String FILE_ABSOLUTE_PATH = "/tmp/test.vo/test.txt";
 
-  private final static String FOLDER_STFN_PATH = "/test.vo";
-  private final static String FOLDER_ABSOLUTE_PATH = "/tmp/test.vo";
+  private static final String FOLDER_STFN_PATH = "/test.vo";
+  private static final String FOLDER_ABSOLUTE_PATH = "/tmp/test.vo";
 
   private StormStorageBackend backend;
   private ObjectMapper mapper = new ObjectMapper();

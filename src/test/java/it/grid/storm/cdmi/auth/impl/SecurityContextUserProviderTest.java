@@ -8,6 +8,10 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
 
+import it.grid.storm.cdmi.auth.User;
+import it.grid.storm.cdmi.auth.UserProvider;
+import it.grid.storm.cdmi.auth.UserProviderException;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -15,10 +19,6 @@ import org.mockito.Mockito;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import it.grid.storm.cdmi.auth.User;
-import it.grid.storm.cdmi.auth.UserProvider;
-import it.grid.storm.cdmi.auth.UserProviderException;
 
 public class SecurityContextUserProviderTest {
 
