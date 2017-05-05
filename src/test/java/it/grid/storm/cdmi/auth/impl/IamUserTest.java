@@ -42,6 +42,18 @@ public class IamUserTest {
     assertThat(roleAdmin, isIn(u.getAuthorities()));
   }
 
+  @Test
+  public void testSuccessWithRestUser() {
+
+    UsernamePasswordAuthenticationToken token = AuthUtils.getRestuser("restuser", "ROLE_ADMIN");
+    IamUser u = new IamUser(token);
+    assertThat(u.getUserId(), equalTo("restuser"));
+    assertThat(u.getOrganizationName(), equalTo(null));
+    assertTrue(u.getScopes().isEmpty());
+    assertTrue(u.getGroups().isEmpty());
+    assertThat(roleAdmin, isIn(u.getAuthorities()));
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void testNullSubValue() {
 

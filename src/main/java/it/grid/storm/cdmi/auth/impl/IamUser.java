@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class IamUser implements User {
 
@@ -26,27 +27,38 @@ public class IamUser implements User {
    */
   public IamUser(UsernamePasswordAuthenticationToken auth) {
 
-    try {
+    sub = null;
+    organization = null;
+    scopes = Lists.newArrayList();
+    groups = Lists.newArrayList();
+    authorities = Lists.newArrayList();
 
-      JSONObject authDetails = new JSONObject(auth.getDetails().toString());
+    if (auth.getPrincipal() instanceof UserDetails) {
 
-      sub = authDetails.getJSONObject("userinfo").getString("sub");
-      groups = Lists.newArrayList();
-      authDetails.getJSONObject("userinfo").getJSONArray("groups")
-          .forEach(g -> this.groups.add(g.toString()));
-      scopes = Lists.newArrayList();
-      String scopesStr = authDetails.getJSONObject("tokeninfo").getString("scope");
-      if (!scopesStr.isEmpty()) {
-        for (String scope : scopesStr.split(" ")) {
-          scopes.add(scope);
+      UserDetails user = (UserDetails) auth.getPrincipal();
+      sub = user.getUsername();
+      authorities.addAll(user.getAuthorities());
+
+    } else {
+
+      try {
+
+        JSONObject authDetails = new JSONObject(auth.getDetails().toString());
+        sub = authDetails.getJSONObject("userinfo").getString("sub");
+        authDetails.getJSONObject("userinfo").getJSONArray("groups")
+            .forEach(g -> this.groups.add(g.toString()));
+        String scopesStr = authDetails.getJSONObject("tokeninfo").getString("scope");
+        if (!scopesStr.isEmpty()) {
+          for (String scope : scopesStr.split(" ")) {
+            scopes.add(scope);
+          }
         }
-      }
-      organization = authDetails.getJSONObject("tokeninfo").getString("organisation_name");
-      authorities = Lists.newArrayList();
-      authorities.addAll(auth.getAuthorities());
+        organization = authDetails.getJSONObject("tokeninfo").getString("organisation_name");
+        authorities.addAll(auth.getAuthorities());
 
-    } catch (JSONException e) {
-      throw new IllegalArgumentException(e.getMessage(), e);
+      } catch (JSONException e) {
+        throw new IllegalArgumentException(e.getMessage(), e);
+      }
     }
 
   }

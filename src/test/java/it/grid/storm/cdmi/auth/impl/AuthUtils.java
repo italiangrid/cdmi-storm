@@ -5,7 +5,10 @@ import java.util.List;
 import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class AuthUtils {
 
@@ -31,5 +34,12 @@ public class AuthUtils {
         new UsernamePasswordAuthenticationToken(sub, null, authorities);
     auth.setDetails(details.toString());
     return auth;
+  }
+
+  public static UsernamePasswordAuthenticationToken getRestuser(String username, String role) {
+
+    UserDetails user = new User(username, "password", true, true, true, true,
+        AuthorityUtils.createAuthorityList(role));
+    return new UsernamePasswordAuthenticationToken(user, null);
   }
 }
