@@ -1,6 +1,8 @@
 package it.grid.storm.cdmi.auth.impl;
 
 import static it.grid.storm.cdmi.auth.impl.AuthUtils.getToken;
+import static it.grid.storm.cdmi.auth.impl.AuthUtils.roleAdmin;
+import static it.grid.storm.cdmi.auth.impl.AuthUtils.roleUser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -17,6 +19,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 
 public class DefaultAuthorizationManagerTest {
 
@@ -42,8 +45,9 @@ public class DefaultAuthorizationManagerTest {
     String scopes = "testvo:read testvo:recall";
     List<String> groups = Lists.newArrayList();
     String voName = "test.vo";
+    List<GrantedAuthority> authorities = Lists.newArrayList(roleUser);
 
-    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName);
+    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName, authorities);
     return new IamUser(token);
   }
 
@@ -53,8 +57,21 @@ public class DefaultAuthorizationManagerTest {
     String scopes = "";
     List<String> groups = Lists.newArrayList("test.vo-users");
     String voName = "test.vo";
+    List<GrantedAuthority> authorities = Lists.newArrayList(roleUser);
 
-    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName);
+    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName, authorities);
+    return new IamUser(token);
+  }
+
+  private IamUser getAuthorizedUserWithRoleAdmin() {
+
+    String id = "UserId";
+    String scopes = "";
+    List<String> groups = Lists.newArrayList();
+    String voName = "test.vo";
+    List<GrantedAuthority> authorities = Lists.newArrayList(roleAdmin);
+
+    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName, authorities);
     return new IamUser(token);
   }
 
@@ -64,8 +81,9 @@ public class DefaultAuthorizationManagerTest {
     String scopes = "";
     List<String> groups = Lists.newArrayList();
     String voName = "test.vo";
+    List<GrantedAuthority> authorities = Lists.newArrayList(roleUser);
 
-    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName);
+    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName, authorities);
     return new IamUser(token);
   }
 
@@ -81,6 +99,13 @@ public class DefaultAuthorizationManagerTest {
 
     AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
     authManager.canRead(getAuthorizedUserWithGroup(), "/test.vo");
+  }
+
+  @Test
+  public void testReadSuccessWithRoleAdmin() throws AuthorizationException, IOException {
+
+    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
+    authManager.canRead(getAuthorizedUserWithRoleAdmin(), "/test.vo");
   }
 
   @Test(expected = AuthorizationException.class)
@@ -102,6 +127,13 @@ public class DefaultAuthorizationManagerTest {
 
     AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
     authManager.canRecall(getAuthorizedUserWithGroup(), "/test.vo");
+  }
+
+  @Test
+  public void testRecallSuccessWithRoleAdmin() throws AuthorizationException, IOException {
+
+    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
+    authManager.canRecall(getAuthorizedUserWithRoleAdmin(), "/test.vo");
   }
 
   @Test(expected = AuthorizationException.class)

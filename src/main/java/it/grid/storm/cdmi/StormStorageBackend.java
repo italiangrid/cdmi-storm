@@ -207,13 +207,17 @@ public class StormStorageBackend implements StorageBackend {
 
     User user = null;
     try {
+      log.debug("Retrieving user ...");
       user = userProvider.getUser();
+      log.debug("Retrieved user {}", user);
     } catch (UserProviderException e) {
       log.warn("Cannot retrieve user");
       throw new BackEndException(e);
     }
     try {
+      log.debug("Check read permissions for user {} on path {}", user.getUserId(), path);
       authManager.canRead(user, path);
+      log.debug("User {} is authorized to read path {}", user.getUserId(), path);
     } catch (AuthorizationException e) {
       log.warn("User {} is not authorized to read path {}", user, path);
       throw new PermissionDeniedBackEndException(e);
@@ -228,13 +232,17 @@ public class StormStorageBackend implements StorageBackend {
 
     User user = null;
     try {
+      log.debug("Retrieving user ...");
       user = userProvider.getUser();
+      log.debug("Retrieved user {}", user);
     } catch (UserProviderException e) {
       log.warn("Cannot retrieve user");
       throw new BackEndException(e);
     }
     try {
+      log.debug("Check read permissions for user {} on path {}", user.getUserId(), path);
       authManager.canRead(user, path);
+      log.debug("User {} is authorized to read path {}", user.getUserId(), path);
     } catch (AuthorizationException e) {
       log.warn("User {} is not authorized to read path {}", user, path);
       throw new PermissionDeniedBackEndException(e);

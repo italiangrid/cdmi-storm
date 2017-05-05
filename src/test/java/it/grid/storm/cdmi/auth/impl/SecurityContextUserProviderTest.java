@@ -1,6 +1,8 @@
 package it.grid.storm.cdmi.auth.impl;
 
 import static it.grid.storm.cdmi.auth.impl.AuthUtils.getToken;
+import static it.grid.storm.cdmi.auth.impl.AuthUtils.roleAdmin;
+import static it.grid.storm.cdmi.auth.impl.AuthUtils.roleUser;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -18,6 +20,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityContextUserProviderTest {
@@ -26,13 +29,14 @@ public class SecurityContextUserProviderTest {
   private String scopes = "testvo_read testvo_recall";
   private List<String> groups = Lists.newArrayList("Users", "Developers");
   private String voName = "test.vo";
+  private List<GrantedAuthority> authorities = Lists.newArrayList(roleUser, roleAdmin);
 
   private UserProvider userProvider = new SecurityContextUserProvider();
 
   @Test
   public void testSuccess() {
 
-    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName);
+    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName, authorities);
     SecurityContextHolder.getContext().setAuthentication(token);
 
     User u = userProvider.getUser();

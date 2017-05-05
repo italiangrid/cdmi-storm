@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class DefaultAuthorizationManager implements AuthorizationManager {
 
@@ -30,18 +31,21 @@ public class DefaultAuthorizationManager implements AuthorizationManager {
     Preconditions.checkArgument(u != null, "Invalid null User");
     Preconditions.checkArgument(path != null, "Invalid null path");
 
-    log.debug("check read permissions for user {} on path {}", u.getUserId(), path);
+    if (u.hasAuthority(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+      return;
+    }
 
     VirtualOrganization vo = getVirtualOrganizationFromPath(path);
 
-    boolean authorized = u.hasScope(vo.getReadScope()) || u.hasGroup(vo.getIamGroup());
-
-    if (!authorized) {
-      throw new AuthorizationException(
-          "Missing scope " + vo.getReadScope() + " or group " + vo.getIamGroup());
+    if (u.hasScope(vo.getReadScope())) {
+      return;
+    }
+    if (u.hasGroup(vo.getIamGroup())) {
+      return;
     }
 
-    log.debug("user {} is authorized to read path {}", u.getUserId(), path);
+    throw new AuthorizationException(
+        "Missing scope " + vo.getReadScope() + " or group " + vo.getIamGroup());
   }
 
   @Override
@@ -50,18 +54,21 @@ public class DefaultAuthorizationManager implements AuthorizationManager {
     Preconditions.checkArgument(u != null, "Invalid null User");
     Preconditions.checkArgument(path != null, "Invalid null path");
 
-    log.debug("check recall permissions for user {} on path {}", u.getUserId(), path);
+    if (u.hasAuthority(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+      return;
+    }
 
     VirtualOrganization vo = getVirtualOrganizationFromPath(path);
 
-    boolean authorized = u.hasScope(vo.getRecallScope()) || u.hasGroup(vo.getIamGroup());
-
-    if (!authorized) {
-      throw new AuthorizationException(
-          "Missing scope " + vo.getRecallScope() + " or group " + vo.getIamGroup());
+    if (u.hasScope(vo.getRecallScope())) {
+      return;
+    }
+    if (u.hasGroup(vo.getIamGroup())) {
+      return;
     }
 
-    log.debug("user {} is authorized to recall path {}", u.getUserId(), path);
+    throw new AuthorizationException(
+        "Missing scope " + vo.getRecallScope() + " or group " + vo.getIamGroup());
   }
 
   private VirtualOrganization getVirtualOrganizationFromPath(String path)

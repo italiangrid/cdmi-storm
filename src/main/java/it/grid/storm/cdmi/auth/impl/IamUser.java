@@ -9,6 +9,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 
 public class IamUser implements User {
 
@@ -16,6 +17,7 @@ public class IamUser implements User {
   private List<String> scopes;
   private List<String> groups;
   private String organization;
+  private List<GrantedAuthority> authorities;
 
   /**
    * Constructor.
@@ -28,18 +30,20 @@ public class IamUser implements User {
 
       JSONObject authDetails = new JSONObject(auth.getDetails().toString());
 
-      this.sub = authDetails.getJSONObject("userinfo").getString("sub");
-      this.groups = Lists.newArrayList();
+      sub = authDetails.getJSONObject("userinfo").getString("sub");
+      groups = Lists.newArrayList();
       authDetails.getJSONObject("userinfo").getJSONArray("groups")
           .forEach(g -> this.groups.add(g.toString()));
-      this.scopes = Lists.newArrayList();
+      scopes = Lists.newArrayList();
       String scopesStr = authDetails.getJSONObject("tokeninfo").getString("scope");
       if (!scopesStr.isEmpty()) {
         for (String scope : scopesStr.split(" ")) {
           scopes.add(scope);
         }
       }
-      this.organization = authDetails.getJSONObject("tokeninfo").getString("organisation_name");
+      organization = authDetails.getJSONObject("tokeninfo").getString("organisation_name");
+      authorities = Lists.newArrayList();
+      authorities.addAll(auth.getAuthorities());
 
     } catch (JSONException e) {
       throw new IllegalArgumentException(e.getMessage(), e);
@@ -84,9 +88,23 @@ public class IamUser implements User {
   }
 
   @Override
-  public String toString() {
-    return "IamUser [sub=" + sub + ", scopes=" + scopes + ", groups=" + groups + ", organization="
-        + organization + "]";
+  public List<GrantedAuthority> getAuthorities() {
+    return authorities;
   }
 
+  @Override
+  public String toString() {
+    return "IamUser [sub=" + sub + ", scopes=" + scopes + ", groups=" + groups + ", organization="
+        + organization + ", authorities=" + authorities + "]";
+  }
+
+  @Override
+  public boolean hasAuthority(GrantedAuthority authority) {
+    for (GrantedAuthority auth : authorities) {
+      if (auth.getAuthority().equals(authority.getAuthority())) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

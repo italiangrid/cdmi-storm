@@ -20,6 +20,7 @@ import it.grid.storm.cdmi.auth.AuthorizationException;
 import it.grid.storm.cdmi.auth.AuthorizationManager;
 import it.grid.storm.cdmi.auth.User;
 import it.grid.storm.cdmi.auth.UserProvider;
+import it.grid.storm.cdmi.auth.UserProviderException;
 import it.grid.storm.cdmi.config.ExportIdentifier;
 import it.grid.storm.cdmi.config.PluginConfiguration;
 import it.grid.storm.cdmi.config.StormBackendCapability;
@@ -39,6 +40,7 @@ import javax.xml.bind.ValidationException;
 
 import org.indigo.cdmi.BackEndException;
 import org.indigo.cdmi.CdmiObjectStatus;
+import org.indigo.cdmi.PermissionDeniedBackEndException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -110,6 +112,13 @@ public class StormStorageBackendTest {
     return userProvider;
   }
 
+  private UserProvider getMockedUserProviderUserNotFound() {
+
+    UserProvider userProvider = Mockito.mock(UserProvider.class);
+    Mockito.when(userProvider.getUser()).thenThrow(new UserProviderException("error"));
+    return userProvider;
+  }
+
   private AuthorizationManager getMockedAuthorizationManager()
       throws AuthorizationException, IOException {
 
@@ -118,6 +127,17 @@ public class StormStorageBackendTest {
         Mockito.any(String.class));
     Mockito.doNothing().when(authManager).canRecall(Mockito.any(User.class),
         Mockito.any(String.class));
+    return authManager;
+  }
+
+  private AuthorizationManager getMockedAuthManagerAuthorizationException()
+      throws AuthorizationException, IOException {
+
+    AuthorizationManager authManager = Mockito.mock(AuthorizationManager.class);
+    Mockito.doThrow(new AuthorizationException("error")).when(authManager)
+        .canRead(Mockito.any(User.class), Mockito.any(String.class));
+    Mockito.doThrow(new AuthorizationException("error")).when(authManager)
+        .canRecall(Mockito.any(User.class), Mockito.any(String.class));
     return authManager;
   }
 
@@ -244,6 +264,22 @@ public class StormStorageBackendTest {
     assertThat(status.getChildren(), containsInAnyOrder("/test.vo", "/cms"));
   }
 
+  @Test(expected = BackEndException.class)
+  public void testGetCurrentStatusWithUserProviderException()
+      throws IOException, ValidationException, BackEndException {
+
+    backend.setUserProvider(getMockedUserProviderUserNotFound());
+    backend.getCurrentStatus("/test.vo");
+  }
+
+  @Test(expected = PermissionDeniedBackEndException.class)
+  public void testGetCurrentStatusWithAuthorizationException()
+      throws IOException, ValidationException, BackEndException {
+
+    backend.setAuthorizationManager(getMockedAuthManagerAuthorizationException());
+    backend.getCurrentStatus("/test.vo");
+  }
+
   @Test
   public void testPostSuccessfulRecallTask() throws BackEndException {
 
@@ -307,4 +343,29 @@ public class StormStorageBackendTest {
       assertThat(e.getMessage(), equalTo("Containers QoS cannot change"));
     }
   }
+
+  @Test(expected = BackEndException.class)
+  public void testPostFailRecallWithUserProviderException()
+      throws IOException, ValidationException, BackEndException {
+
+    backend.setUserProvider(getMockedUserProviderUserNotFound());
+    StoriMetadata meta = StoriMetadata.builder().absolutePath(FILE_ABSOLUTE_PATH).status(NEARLINE)
+        .type(FILE).attributes(FileAttributes.builder().migrated(true).build()).build();
+    backend.setBackendGateway(getBackendGateway(FILE_STFN_PATH, meta));
+    String targetCapabilitiesUri = buildCapabilityUri(DATAOBJECT, "DiskAndTape");
+    backend.updateCdmiObject(FILE_STFN_PATH, targetCapabilitiesUri);
+  }
+
+  @Test(expected = PermissionDeniedBackEndException.class)
+  public void testPostFailRecallWithAuthorizationException()
+      throws AuthorizationException, IOException, BackEndException {
+
+    backend.setAuthorizationManager(getMockedAuthManagerAuthorizationException());
+    StoriMetadata meta = StoriMetadata.builder().absolutePath(FILE_ABSOLUTE_PATH).status(NEARLINE)
+        .type(FILE).attributes(FileAttributes.builder().migrated(true).build()).build();
+    backend.setBackendGateway(getBackendGateway(FILE_STFN_PATH, meta));
+    String targetCapabilitiesUri = buildCapabilityUri(DATAOBJECT, "DiskAndTape");
+    backend.updateCdmiObject(FILE_STFN_PATH, targetCapabilitiesUri);
+  }
+
 }

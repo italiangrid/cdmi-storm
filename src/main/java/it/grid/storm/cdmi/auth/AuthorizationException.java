@@ -11,7 +11,4 @@ public class AuthorizationException extends RuntimeException {
     super(message);
   }
 
-  public AuthorizationException(Throwable e) {
-    super(e);
-  }
 }
