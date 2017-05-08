@@ -90,7 +90,7 @@ public class StormBackendGateway implements BackendGateway {
   @Override
   public void addRecallTask(User user, String path) {
 
-    log.debug("GET {} as {}", path, user.getUserId());
+    log.info("Recall {} as {}", path, user.getUserId());
 
     TaskInsertRequest request =
         TaskInsertRequest.builder().userId(user.getUserId()).stfn(path).build();
@@ -107,6 +107,7 @@ public class StormBackendGateway implements BackendGateway {
 
     HttpPost postMethod = new HttpPost(buildRecallFileUrl());
     postMethod.setEntity(requestEntity);
+    postMethod.addHeader(getAuthorizationHeader());
 
     HttpResponse response = null;
     try {
@@ -119,6 +120,10 @@ public class StormBackendGateway implements BackendGateway {
     if (response.getStatusLine().getStatusCode() != 201) {
       throw new BackendGatewayException("Error response from Backend: " + response.getStatusLine());
     }
+  }
+
+  private Header getAuthorizationHeader() {
+  	return new BasicHeader("Token", token);
   }
 
   private String buildMetadataUrl(String path) {
@@ -139,8 +144,7 @@ public class StormBackendGateway implements BackendGateway {
   private HttpResponse doHttpGet(String url) throws BackendGatewayException {
 
     HttpGet httpGet = new HttpGet(url);
-    Header authorizationHeader = new BasicHeader("Token", token);
-    httpGet.addHeader(authorizationHeader);
+    httpGet.addHeader(getAuthorizationHeader());
 
     HttpResponse response = null;
 
