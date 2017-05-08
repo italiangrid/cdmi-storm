@@ -1,4 +1,4 @@
-package it.grid.storm.gateway;
+package it.grid.storm.gateway.impl;
 
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 
 import it.grid.storm.cdmi.auth.User;
-import it.grid.storm.gateway.model.BackendGateway;
-import it.grid.storm.gateway.model.BackendGatewayException;
+import it.grid.storm.gateway.BackendGateway;
+import it.grid.storm.gateway.BackendGatewayException;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 import it.grid.storm.rest.recall.model.TaskInsertRequest;
 

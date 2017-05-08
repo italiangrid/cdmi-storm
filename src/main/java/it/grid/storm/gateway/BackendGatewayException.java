@@ -1,4 +1,4 @@
-package it.grid.storm.gateway.model;
+package it.grid.storm.gateway;
 
 public class BackendGatewayException extends RuntimeException {
 

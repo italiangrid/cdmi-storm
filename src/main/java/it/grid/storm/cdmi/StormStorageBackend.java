@@ -18,9 +18,9 @@ import it.grid.storm.cdmi.capability.impl.DefaultCapabilityManager;
 import it.grid.storm.cdmi.config.PluginConfiguration;
 import it.grid.storm.cdmi.config.StormBackendCapability;
 import it.grid.storm.cdmi.config.VirtualOrganization;
-import it.grid.storm.gateway.StormBackendGateway;
-import it.grid.storm.gateway.model.BackendGateway;
-import it.grid.storm.gateway.model.BackendGatewayException;
+import it.grid.storm.gateway.BackendGateway;
+import it.grid.storm.gateway.BackendGatewayException;
+import it.grid.storm.gateway.impl.StormBackendGateway;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 
 import java.io.IOException;

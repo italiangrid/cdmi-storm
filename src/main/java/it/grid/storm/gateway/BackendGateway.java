@@ -1,4 +1,4 @@
-package it.grid.storm.gateway.model;
+package it.grid.storm.gateway;
 
 import it.grid.storm.cdmi.auth.User;
 import it.grid.storm.rest.metadata.model.StoriMetadata;

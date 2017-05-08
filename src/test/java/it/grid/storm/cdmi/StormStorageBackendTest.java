@@ -26,7 +26,7 @@ import it.grid.storm.cdmi.config.PluginConfiguration;
 import it.grid.storm.cdmi.config.StormBackendCapability;
 import it.grid.storm.cdmi.config.StormBackendContainerCapability;
 import it.grid.storm.cdmi.config.StormBackendDatobjectCapability;
-import it.grid.storm.gateway.model.BackendGateway;
+import it.grid.storm.gateway.BackendGateway;
 import it.grid.storm.rest.metadata.model.FileAttributes;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 

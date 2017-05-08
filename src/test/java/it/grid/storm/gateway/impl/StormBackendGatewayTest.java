@@ -1,4 +1,4 @@
-package it.grid.storm.gateway;
+package it.grid.storm.gateway.impl;
 
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.Matchers.containsString;
@@ -9,8 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.grid.storm.cdmi.auth.User;
-import it.grid.storm.gateway.model.BackendGateway;
-import it.grid.storm.gateway.model.BackendGatewayException;
+import it.grid.storm.gateway.BackendGateway;
+import it.grid.storm.gateway.BackendGatewayException;
+import it.grid.storm.gateway.impl.StormBackendGateway;
 import it.grid.storm.rest.metadata.model.FileAttributes;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 
