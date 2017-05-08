@@ -5,7 +5,6 @@ import static it.grid.storm.rest.metadata.model.StoriMetadata.ResourceType.FILE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -47,7 +46,7 @@ public class StoriMetadataTest {
   }
 
   @Test
-  public void testStoriMetadataBuilder() throws ParseException, JsonProcessingException {
+  public void testStoriMetadataBuilder() throws ParseException, IOException {
 
     StoriMetadata meta = StoriMetadata.builder().absolutePath(absolutePath)
         .lastModified(dateFormat.parse(lastModified))
@@ -56,6 +55,8 @@ public class StoriMetadataTest {
             FileAttributes.builder().pinned(pinned).migrated(migrated).premigrated(premigrated)
                 .checksum(checksum).tsmRecD(tsmRecD).tsmRecT(tsmRecT).tsmRecR(tsmRecR).build())
         .build();
-    mapper.writeValueAsString(meta);
+    String jsonString = mapper.writeValueAsString(meta);
+    StoriMetadata metaRead = mapper.readValue(jsonString.getBytes(), StoriMetadata.class);
+    System.out.println(metaRead.toString());
   }
 }

@@ -30,7 +30,12 @@ public class VirtualFsMetadata {
     return root;
   }
 
-  public static Builder builder() {
+  @Override
+	public String toString() {
+		return "VirtualFsMetadata [name=" + name + ", root=" + root + "]";
+	}
+
+	public static Builder builder() {
     return new Builder();
   }
 
