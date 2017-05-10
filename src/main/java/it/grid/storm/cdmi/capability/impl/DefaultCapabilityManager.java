@@ -83,8 +83,8 @@ public class DefaultCapabilityManager implements CapabilityManager<StoriMetadata
   @Override
   public boolean isAllowedToMove(BackendCapability cap, String targetCapabilityUri) {
 
-    if (cap.getMetadata().containsKey("cdmi_capabilities_allowed")) {
-      Object values = cap.getMetadata().get("cdmi_capabilities_allowed");
+    if (cap.getMetadata().containsKey("cdmi_capabilities_allowed_provided")) {
+      Object values = cap.getMetadata().get("cdmi_capabilities_allowed_provided");
       if (values instanceof List<?>) {
         List<?> targets = (List<?>) values;
         if (targets.contains(targetCapabilityUri)) {
