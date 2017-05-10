@@ -18,6 +18,15 @@ public class TaskInsertRequest {
   private String voName;
   private Integer pinLifetime;
 
+  /**
+   * TaskInsertRequest constructor.
+   * 
+   * @param stfn The SRM stfn-Root.
+   * @param userId The User ID.
+   * @param retryAttempts The number of retry attempts to do.
+   * @param voName The Virtual Organization name.
+   * @param pinLifetime The pin lifetime to set to the file.
+   */
   @JsonCreator
   public TaskInsertRequest(@JsonProperty("stfn") String stfn, @JsonProperty("userId") String userId,
       @JsonProperty("retryAttempts") int retryAttempts, @JsonProperty("voName") String voName,
@@ -30,6 +39,11 @@ public class TaskInsertRequest {
     this.userId = userId;
   }
 
+  /**
+   * TaskInsertRequest constructor from @Builder.
+   * 
+   * @param builder The @Builder instance.
+   */
   public TaskInsertRequest(Builder builder) {
     this.stfn = builder.stfn;
     this.retryAttempts = builder.retryAttempts;

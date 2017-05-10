@@ -71,13 +71,13 @@ public class FileAttributes {
   }
 
   @Override
-	public String toString() {
-		return "FileAttributes [pinned=" + pinned + ", migrated=" + migrated + ", premigrated="
-				+ premigrated + ", checksum=" + checksum + ", tsmRecD=" + tsmRecD + ", tsmRecR=" + tsmRecR
-				+ ", tsmRecT=" + tsmRecT + "]";
-	}
+  public String toString() {
+    return "FileAttributes [pinned=" + pinned + ", migrated=" + migrated + ", premigrated="
+        + premigrated + ", checksum=" + checksum + ", tsmRecD=" + tsmRecD + ", tsmRecR=" + tsmRecR
+        + ", tsmRecT=" + tsmRecT + "]";
+  }
 
-	/**
+  /**
    * Constructor through the builder.
    * 
    * @param builder The @FileAttributes.Builder instance.

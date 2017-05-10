@@ -123,7 +123,7 @@ public class StormBackendGateway implements BackendGateway {
   }
 
   private Header getAuthorizationHeader() {
-  	return new BasicHeader("Token", token);
+    return new BasicHeader("Token", token);
   }
 
   private String buildMetadataUrl(String path) {
