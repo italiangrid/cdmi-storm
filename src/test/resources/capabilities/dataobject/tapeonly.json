@@ -22,7 +22,7 @@
         "cdmi_throughput_provided": "4194304",
         "cdmi_data_storage_lifetime_provided": "P20Y",
         "cdmi_recommended_polling_interval": "50000",
-        "cdmi_capabilities_allowed": [
+        "cdmi_capabilities_allowed_provided": [
             "/cdmi_capabilities/dataobject/DiskAndTape",
             "/cdmi_capabilities/dataobject/DiskOnly"
         ],
