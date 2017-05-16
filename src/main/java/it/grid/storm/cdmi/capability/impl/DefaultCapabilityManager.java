@@ -8,7 +8,10 @@ import static org.indigo.cdmi.BackendCapability.CapabilityType.DATAOBJECT;
 import it.grid.storm.cdmi.capability.CapabilityManager;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.indigo.cdmi.BackendCapability;
 import org.indigo.cdmi.BackendCapability.CapabilityType;
@@ -48,15 +51,15 @@ public class DefaultCapabilityManager implements CapabilityManager<StoriMetadata
   }
 
   @Override
-  public String getTargetCapabilityUri(BackendCapability cap, StoriMetadata metadata) {
+  public Optional<String> getTargetCapabilityUri(BackendCapability cap, StoriMetadata metadata) {
 
     if (cap.getType().equals(DATAOBJECT) && cap.getName().equals("TapeOnly")) {
       String recTasks = metadata.getAttributes().getTsmRecT();
       if (recTasks != null && !recTasks.isEmpty()) {
-        return getCapabilityUri(DATAOBJECT, "DiskAndTape");
+        return Optional.of(getCapabilityUri(DATAOBJECT, "DiskAndTape"));
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
@@ -83,8 +86,9 @@ public class DefaultCapabilityManager implements CapabilityManager<StoriMetadata
   @Override
   public boolean isAllowedToMove(BackendCapability cap, String targetCapabilityUri) {
 
-    if (cap.getMetadata().containsKey("cdmi_capabilities_allowed_provided")) {
-      Object values = cap.getMetadata().get("cdmi_capabilities_allowed_provided");
+    Map<String, Object> providedMetadata = getMetadataProvided(cap);
+    if (providedMetadata.containsKey("cdmi_capabilities_allowed_provided")) {
+      Object values = providedMetadata.get("cdmi_capabilities_allowed_provided");
       if (values instanceof List<?>) {
         List<?> targets = (List<?>) values;
         if (targets.contains(targetCapabilityUri)) {
@@ -93,6 +97,16 @@ public class DefaultCapabilityManager implements CapabilityManager<StoriMetadata
       }
     }
     return false;
+  }
+
+  @Override
+  public Map<String, Object> getMetadataProvided(BackendCapability cap) {
+
+    Map<String, Object> out = new HashMap<String, Object>();
+    for (String key: cap.getMetadata().keySet()) {
+      out.put(key + "_provided", cap.getMetadata().get(key));
+    }
+    return out;
   }
 
 }

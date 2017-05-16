@@ -14,18 +14,17 @@
         "cdmi_capabilities_allowed": true
     },
     "metadata": {
-        "cdmi_data_redundancy_provided": "1",
-        "cdmi_geographic_placement_provided": [
+        "cdmi_data_redundancy": "1",
+        "cdmi_geographic_placement": [
             "IT"
         ],
-        "cdmi_latency_provided": "10000",
-        "cdmi_throughput_provided": "4194304",
-        "cdmi_data_storage_lifetime_provided": "P20Y",
-        "cdmi_recommended_polling_interval": "50000",
-        "cdmi_capabilities_allowed_provided": [
+        "cdmi_latency": "10000",
+        "cdmi_throughput": "4194304",
+        "cdmi_data_storage_lifetime": "P20Y",
+        "cdmi_capabilities_allowed": [
             "/cdmi_capabilities/dataobject/DiskAndTape",
             "/cdmi_capabilities/dataobject/DiskOnly"
         ],
-        "cdmi_durability_provided": "99.999"
+        "cdmi_durability": "99.999"
     }
 }

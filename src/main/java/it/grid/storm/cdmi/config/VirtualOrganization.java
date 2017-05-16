@@ -36,6 +36,15 @@ public class VirtualOrganization {
     this.iamGroup = iamGroup;
   }
 
+  public VirtualOrganization(Builder builder) {
+
+    this.name = builder.name;
+    this.path = builder.path;
+    this.readScope = builder.readScope;
+    this.recallScope = builder.recallScope;
+    this.iamGroup = builder.iamGroup;
+  }
+
   public String getName() {
     return name;
   }
@@ -62,4 +71,45 @@ public class VirtualOrganization {
         + ", recallScope=" + recallScope + ", iamGroup=" + iamGroup + "]";
   }
 
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+
+    private String name;
+    private String path;
+    private String readScope;
+    private String recallScope;
+    private String iamGroup;
+
+    public Builder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder path(String path) {
+      this.path = path;
+      return this;
+    }
+
+    public Builder readScope(String readScope) {
+      this.readScope = readScope;
+      return this;
+    }
+
+    public Builder recallScope(String recallScope) {
+      this.recallScope = recallScope;
+      return this;
+    }
+
+    public Builder iamGroup(String iamGroup) {
+      this.iamGroup = iamGroup;
+      return this;
+    }
+
+    public VirtualOrganization build() {
+      return new VirtualOrganization(this);
+    }
+  }
 }

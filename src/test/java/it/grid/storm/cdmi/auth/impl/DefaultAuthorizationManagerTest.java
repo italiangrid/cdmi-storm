@@ -4,15 +4,12 @@ import static it.grid.storm.cdmi.auth.impl.AuthUtils.getToken;
 import static it.grid.storm.cdmi.auth.impl.AuthUtils.roleAdmin;
 import static it.grid.storm.cdmi.auth.impl.AuthUtils.roleUser;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 import it.grid.storm.cdmi.auth.AuthorizationException;
 import it.grid.storm.cdmi.auth.AuthorizationManager;
-import it.grid.storm.cdmi.config.PluginConfiguration;
 import it.grid.storm.cdmi.config.VirtualOrganization;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,28 +20,29 @@ import org.springframework.security.core.GrantedAuthority;
 
 public class DefaultAuthorizationManagerTest {
 
-  private List<VirtualOrganization> vos;
+  private final String voName = "test.vo";
+  private final String voPath = "/test.vo";
+  private final String voReadScope = "testvo:read";
+  private final String voRecallScope = "testvo:recall";
+  private final String voGroup = "test.vo-users";
 
-  private List<VirtualOrganization> getVirtualOrganizations() throws IOException {
+  private final String id = "UserId";
 
-    ObjectMapper mapper = new ObjectMapper();
-    String filePath = getClass().getClassLoader().getResource("storm-properties.json").getFile();
-    PluginConfiguration conf = mapper.readValue(new File(filePath), PluginConfiguration.class);
-    return conf.getVos();
-  }
+  private VirtualOrganization vo;
+  private AuthorizationManager authManager;
 
   @Before
   public void initOrganizations() throws IOException {
 
-    vos = getVirtualOrganizations();
+    vo = VirtualOrganization.builder().name(voName).path(voPath).readScope(voReadScope)
+        .recallScope(voRecallScope).iamGroup(voGroup).build();
+    authManager = new DefaultAuthorizationManager();
   }
 
   private IamUser getAuthorizedUserWithScopes() {
 
-    String id = "UserId";
-    String scopes = "testvo:read testvo:recall";
+    String scopes = voReadScope + " " + voRecallScope;
     List<String> groups = Lists.newArrayList();
-    String voName = "test.vo";
     List<GrantedAuthority> authorities = Lists.newArrayList(roleUser);
 
     UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName, authorities);
@@ -53,135 +51,100 @@ public class DefaultAuthorizationManagerTest {
 
   private IamUser getAuthorizedUserWithGroup() {
 
-    String id = "UserId";
-    String scopes = "";
-    List<String> groups = Lists.newArrayList("test.vo-users");
-    String voName = "test.vo";
+    List<String> groups = Lists.newArrayList(voGroup);
     List<GrantedAuthority> authorities = Lists.newArrayList(roleUser);
 
-    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName, authorities);
+    UsernamePasswordAuthenticationToken token = getToken(id, "", groups, voName, authorities);
     return new IamUser(token);
   }
 
   private IamUser getAuthorizedUserWithRoleAdmin() {
 
-    String id = "UserId";
-    String scopes = "";
     List<String> groups = Lists.newArrayList();
-    String voName = "test.vo";
     List<GrantedAuthority> authorities = Lists.newArrayList(roleAdmin);
 
-    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName, authorities);
+    UsernamePasswordAuthenticationToken token = getToken(id, "", groups, voName, authorities);
     return new IamUser(token);
   }
 
   private IamUser getUnAuthorizedUser() {
 
-    String id = "UserId";
-    String scopes = "";
     List<String> groups = Lists.newArrayList();
-    String voName = "test.vo";
     List<GrantedAuthority> authorities = Lists.newArrayList(roleUser);
 
-    UsernamePasswordAuthenticationToken token = getToken(id, scopes, groups, voName, authorities);
+    UsernamePasswordAuthenticationToken token = getToken(id, "", groups, voName, authorities);
     return new IamUser(token);
   }
 
   @Test
   public void testReadSuccessWithScopes() throws AuthorizationException, IOException {
 
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRead(getAuthorizedUserWithScopes(), "/test.vo");
+    authManager.canRead(getAuthorizedUserWithScopes(), vo);
   }
 
   @Test
   public void testReadSuccessWithGroup() throws AuthorizationException, IOException {
 
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRead(getAuthorizedUserWithGroup(), "/test.vo");
+    authManager.canRead(getAuthorizedUserWithGroup(), vo);
   }
 
   @Test
   public void testReadSuccessWithRoleAdmin() throws AuthorizationException, IOException {
 
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRead(getAuthorizedUserWithRoleAdmin(), "/test.vo");
+    authManager.canRead(getAuthorizedUserWithRoleAdmin(), vo);
   }
 
   @Test(expected = AuthorizationException.class)
   public void testReadNotAuthorized() throws IOException {
 
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRead(getUnAuthorizedUser(), "/test.vo");
+    authManager.canRead(getUnAuthorizedUser(), vo);
   }
 
   @Test
   public void testRecallSuccessWithScopes() throws AuthorizationException, IOException {
 
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRecall(getAuthorizedUserWithScopes(), "/test.vo");
+    authManager.canRecall(getAuthorizedUserWithScopes(), vo);
   }
 
   @Test
   public void testRecallSuccessWithGroup() throws AuthorizationException, IOException {
 
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRecall(getAuthorizedUserWithGroup(), "/test.vo");
+    authManager.canRecall(getAuthorizedUserWithGroup(), vo);
   }
 
   @Test
   public void testRecallSuccessWithRoleAdmin() throws AuthorizationException, IOException {
 
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRecall(getAuthorizedUserWithRoleAdmin(), "/test.vo");
+    authManager.canRecall(getAuthorizedUserWithRoleAdmin(), vo);
   }
 
   @Test(expected = AuthorizationException.class)
   public void testRecallNotAuthorized() throws IOException {
 
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRecall(getUnAuthorizedUser(), "/test.vo");
-  }
-
-  @Test(expected = AuthorizationException.class)
-  public void testRecallPathNotSupported() throws IOException {
-
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRecall(getUnAuthorizedUser(), "/notvalidpath");
-  }
-
-  @Test(expected = AuthorizationException.class)
-  public void testRecallPathNotValid() throws IOException {
-
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRecall(getUnAuthorizedUser(), "/#@#");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testRecallNullPath() throws AuthorizationException, IOException {
-
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRecall(getAuthorizedUserWithScopes(), null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testRecallNullUser() throws AuthorizationException, IOException {
-
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRecall(null, "/path");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testReadNullPath() throws AuthorizationException, IOException {
-
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRead(getAuthorizedUserWithScopes(), null);
+    authManager.canRecall(getUnAuthorizedUser(), vo);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testReadNullUser() throws AuthorizationException, IOException {
 
-    AuthorizationManager authManager = new DefaultAuthorizationManager(vos);
-    authManager.canRead(null, "/path");
+    authManager.canRead(null, vo);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testReadNullVo() throws AuthorizationException, IOException {
+
+    authManager.canRead(getAuthorizedUserWithRoleAdmin(), null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testRecallNullUser() throws AuthorizationException, IOException {
+
+    authManager.canRecall(null, vo);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testRecallNullVo() throws AuthorizationException, IOException {
+
+    authManager.canRecall(getAuthorizedUserWithRoleAdmin(), null);
   }
 }

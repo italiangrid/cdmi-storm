@@ -26,7 +26,9 @@ import it.grid.storm.cdmi.config.PluginConfiguration;
 import it.grid.storm.cdmi.config.StormBackendCapability;
 import it.grid.storm.cdmi.config.StormBackendContainerCapability;
 import it.grid.storm.cdmi.config.StormBackendDatobjectCapability;
+import it.grid.storm.cdmi.config.VirtualOrganization;
 import it.grid.storm.gateway.BackendGateway;
+import it.grid.storm.gateway.BackendGatewayException;
 import it.grid.storm.rest.metadata.model.FileAttributes;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 
@@ -63,6 +65,15 @@ public class StormStorageBackendTest {
     Mockito.when(gateway.getStoriMetadata(Mockito.any(User.class), Mockito.eq(path)))
         .thenReturn(meta);
     Mockito.doNothing().when(gateway).addRecallTask(Mockito.any(User.class), Mockito.eq(path));
+    return gateway;
+  }
+
+  private BackendGateway getBackendGatewayRecallException(String path, StoriMetadata meta) {
+    BackendGateway gateway = Mockito.mock(BackendGateway.class);
+    Mockito.when(gateway.getStoriMetadata(Mockito.any(User.class), Mockito.eq(path)))
+        .thenReturn(meta);
+    Mockito.doThrow(new BackendGatewayException("error")).when(gateway)
+        .addRecallTask(Mockito.any(User.class), Mockito.eq(path));
     return gateway;
   }
 
@@ -124,9 +135,9 @@ public class StormStorageBackendTest {
 
     AuthorizationManager authManager = Mockito.mock(AuthorizationManager.class);
     Mockito.doNothing().when(authManager).canRead(Mockito.any(User.class),
-        Mockito.any(String.class));
+        Mockito.any(VirtualOrganization.class));
     Mockito.doNothing().when(authManager).canRecall(Mockito.any(User.class),
-        Mockito.any(String.class));
+        Mockito.any(VirtualOrganization.class));
     return authManager;
   }
 
@@ -135,9 +146,9 @@ public class StormStorageBackendTest {
 
     AuthorizationManager authManager = Mockito.mock(AuthorizationManager.class);
     Mockito.doThrow(new AuthorizationException("error")).when(authManager)
-        .canRead(Mockito.any(User.class), Mockito.any(String.class));
+        .canRead(Mockito.any(User.class), Mockito.any(VirtualOrganization.class));
     Mockito.doThrow(new AuthorizationException("error")).when(authManager)
-        .canRecall(Mockito.any(User.class), Mockito.any(String.class));
+        .canRecall(Mockito.any(User.class), Mockito.any(VirtualOrganization.class));
     return authManager;
   }
 
@@ -265,6 +276,13 @@ public class StormStorageBackendTest {
   }
 
   @Test(expected = BackEndException.class)
+  public void testGetCurrentStatusOfBadPath()
+      throws IOException, ValidationException, BackEndException {
+
+    backend.getCurrentStatus("/bad/path");
+  }
+
+  @Test(expected = BackEndException.class)
   public void testGetCurrentStatusWithUserProviderException()
       throws IOException, ValidationException, BackEndException {
 
@@ -354,6 +372,23 @@ public class StormStorageBackendTest {
     backend.setBackendGateway(getBackendGateway(FILE_STFN_PATH, meta));
     String targetCapabilitiesUri = buildCapabilityUri(DATAOBJECT, "DiskAndTape");
     backend.updateCdmiObject(FILE_STFN_PATH, targetCapabilitiesUri);
+  }
+
+  @Test(expected = BackEndException.class)
+  public void testPostFailGatewayRecall() throws BackEndException {
+
+    StoriMetadata meta = StoriMetadata.builder().absolutePath(FILE_ABSOLUTE_PATH).status(NEARLINE)
+        .type(FILE).attributes(FileAttributes.builder().migrated(true).build()).build();
+    backend.setBackendGateway(getBackendGatewayRecallException(FILE_STFN_PATH, meta));
+    String targetCapabilitiesUri = buildCapabilityUri(DATAOBJECT, "DiskAndTape");
+    backend.updateCdmiObject(FILE_STFN_PATH, targetCapabilitiesUri);
+  }
+
+  @Test(expected = BackEndException.class)
+  public void testPostFailBadPath() throws BackEndException {
+
+    String targetCapabilitiesUri = buildCapabilityUri(DATAOBJECT, "DiskAndTape");
+    backend.updateCdmiObject("/bad/path", targetCapabilitiesUri);
   }
 
   @Test(expected = PermissionDeniedBackEndException.class)

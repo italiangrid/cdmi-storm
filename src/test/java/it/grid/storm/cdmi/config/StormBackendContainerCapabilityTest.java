@@ -44,10 +44,10 @@ public class StormBackendContainerCapabilityTest {
   static final Map<String, Object> metadata = new HashMap<String, Object>() {
     private static final long serialVersionUID = 1L;
     {
-      put("cdmi_data_redundancy_provided", "1");
-      put("cdmi_geographic_placement_provided", Lists.newArrayList("IT"));
-      put("cdmi_latency_provided", "0");
-      put("cdmi_throughput_provided", "4194304");
+      put("cdmi_data_redundancy", "1");
+      put("cdmi_geographic_placement", Lists.newArrayList("IT"));
+      put("cdmi_latency", "0");
+      put("cdmi_throughput", "4194304");
       put("cdmi_location", Lists.newArrayList("/"));
       put("cdmi_default_dataobject_capability_class", "DiskOnly");
     }
