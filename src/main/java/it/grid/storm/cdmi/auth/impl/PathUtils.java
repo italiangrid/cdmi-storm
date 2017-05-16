@@ -19,8 +19,8 @@ public class PathUtils {
    * @return The @VirtualOrganization within the path is.
    * @throws IOException In case of IO problems.
    */
-  public static Optional<VirtualOrganization> getVirtualOrganizationFromPath(List<VirtualOrganization> vos,
-      String path) throws IOException {
+  public static Optional<VirtualOrganization> getVirtualOrganizationFromPath(
+      List<VirtualOrganization> vos, String path) throws IOException {
 
     Preconditions.checkArgument(vos != null, "Null list of VOs");
     Preconditions.checkArgument(path != null, "Null path");

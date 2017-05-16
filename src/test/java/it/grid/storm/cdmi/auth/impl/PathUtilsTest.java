@@ -43,7 +43,7 @@ public class PathUtilsTest {
   }
 
   @Test
-  public void testNotMatchingVO() throws IOException {
+  public void testNotMatchingVirtualOrganization() throws IOException {
 
     Optional<VirtualOrganization> vo = getVirtualOrganizationFromPath(vos, invalidPath);
     assertThat(vo.isPresent(), equalTo(false));

@@ -36,6 +36,11 @@ public class VirtualOrganization {
     this.iamGroup = iamGroup;
   }
 
+  /**
+   * Constructor with Builder.
+   * 
+   * @param builder instance.
+   */
   public VirtualOrganization(Builder builder) {
 
     this.name = builder.name;
