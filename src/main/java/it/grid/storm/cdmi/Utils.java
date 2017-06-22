@@ -2,10 +2,10 @@ package it.grid.storm.cdmi;
 
 import it.grid.storm.cdmi.config.StormBackendCapability;
 
+import org.indigo.cdmi.BackendCapability;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.indigo.cdmi.BackendCapability;
 
 public class Utils {
 

@@ -4,13 +4,13 @@ import com.google.common.collect.Lists;
 
 import it.grid.storm.cdmi.auth.User;
 
-import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.List;
 
 public class IamUser implements User {
 

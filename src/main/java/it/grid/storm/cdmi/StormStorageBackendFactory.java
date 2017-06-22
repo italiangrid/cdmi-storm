@@ -1,9 +1,10 @@
 package it.grid.storm.cdmi;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.grid.storm.cdmi.config.ExportIdentifier;
 import it.grid.storm.cdmi.config.PluginConfiguration;
@@ -11,16 +12,17 @@ import it.grid.storm.cdmi.config.StormBackendCapability;
 import it.grid.storm.cdmi.config.StormBackendContainerCapability;
 import it.grid.storm.cdmi.config.StormBackendDatobjectCapability;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import org.indigo.cdmi.SubjectBasedStorageBackend;
 import org.indigo.cdmi.spi.StorageBackend;
 import org.indigo.cdmi.spi.StorageBackendFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 
 public class StormStorageBackendFactory implements StorageBackendFactory {
 

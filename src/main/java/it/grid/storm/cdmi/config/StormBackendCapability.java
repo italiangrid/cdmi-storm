@@ -1,8 +1,8 @@
 package it.grid.storm.cdmi.config;
 
-import java.util.Map;
-
 import org.indigo.cdmi.BackendCapability.CapabilityType;
+
+import java.util.Map;
 
 public class StormBackendCapability {
 

@@ -7,11 +7,11 @@ import it.grid.storm.cdmi.auth.AuthorizationManager;
 import it.grid.storm.cdmi.auth.User;
 import it.grid.storm.cdmi.config.VirtualOrganization;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.io.IOException;
 
 public class DefaultAuthorizationManager implements AuthorizationManager {
 

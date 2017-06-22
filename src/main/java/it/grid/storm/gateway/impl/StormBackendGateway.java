@@ -2,20 +2,15 @@ package it.grid.storm.gateway.impl;
 
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.grid.storm.cdmi.auth.User;
 import it.grid.storm.gateway.BackendGateway;
 import it.grid.storm.gateway.BackendGatewayException;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 import it.grid.storm.rest.recall.model.TaskInsertRequest;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.UnsupportedCharsetException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -29,6 +24,11 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.UnsupportedCharsetException;
 
 public class StormBackendGateway implements BackendGateway {
 

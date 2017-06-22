@@ -1,8 +1,8 @@
 package it.grid.storm.cdmi.auth;
 
-import java.util.List;
-
 import org.springframework.security.core.GrantedAuthority;
+
+import java.util.List;
 
 public interface User {
 

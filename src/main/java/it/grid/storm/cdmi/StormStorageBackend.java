@@ -24,11 +24,6 @@ import it.grid.storm.gateway.BackendGatewayException;
 import it.grid.storm.gateway.impl.StormBackendGateway;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.indigo.cdmi.BackEndException;
 import org.indigo.cdmi.BackendCapability;
 import org.indigo.cdmi.CdmiObjectStatus;
@@ -36,6 +31,11 @@ import org.indigo.cdmi.PermissionDeniedBackEndException;
 import org.indigo.cdmi.spi.StorageBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class StormStorageBackend implements StorageBackend {
 

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
-
 import org.indigo.cdmi.BackendCapability.CapabilityType;
+
+import java.util.Map;
 
 @JsonInclude(Include.NON_NULL)
 public class StormBackendContainerCapability extends StormBackendCapability {

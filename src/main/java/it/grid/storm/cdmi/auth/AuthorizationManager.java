@@ -6,8 +6,9 @@ import java.io.IOException;
 
 public interface AuthorizationManager {
 
-  public void canRead(User u, VirtualOrganization vo) throws AuthorizationException, IOException;
+  public void canRead(User user, VirtualOrganization vo) throws AuthorizationException, IOException;
 
-  public void canRecall(User u, VirtualOrganization vo) throws AuthorizationException, IOException;
+  public void canRecall(User user, VirtualOrganization vo)
+      throws AuthorizationException, IOException;
 
 }

@@ -8,13 +8,13 @@ import static org.indigo.cdmi.BackendCapability.CapabilityType.DATAOBJECT;
 import it.grid.storm.cdmi.capability.CapabilityManager;
 import it.grid.storm.rest.metadata.model.StoriMetadata;
 
+import org.indigo.cdmi.BackendCapability;
+import org.indigo.cdmi.BackendCapability.CapabilityType;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.indigo.cdmi.BackendCapability;
-import org.indigo.cdmi.BackendCapability.CapabilityType;
 
 public class DefaultCapabilityManager implements CapabilityManager<StoriMetadata> {
 

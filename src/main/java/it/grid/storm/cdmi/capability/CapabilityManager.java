@@ -1,10 +1,10 @@
 package it.grid.storm.cdmi.capability;
 
-import java.util.Map;
-import java.util.Optional;
-
 import org.indigo.cdmi.BackendCapability;
 import org.indigo.cdmi.BackendCapability.CapabilityType;
+
+import java.util.Map;
+import java.util.Optional;
 
 public interface CapabilityManager<T> {
 
