@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_EMPTY)
-public class VirtualOrganization {
+public class VirtualFileSystem {
 
-  private String name;
+  private String voName;
   private String path;
   private String readScope;
   private String recallScope;
@@ -24,12 +24,11 @@ public class VirtualOrganization {
    * @param iamGroup The OIDC group used to be authorized to read/recall.
    */
   @JsonCreator
-  public VirtualOrganization(@JsonProperty("name") String name, @JsonProperty("path") String path,
-      @JsonProperty("read-scope") String readScope,
-      @JsonProperty("recall-scope") String recallScope,
-      @JsonProperty("iam-group") String iamGroup) {
+  public VirtualFileSystem(@JsonProperty("voName") String name, @JsonProperty("path") String path,
+      @JsonProperty("readScope") String readScope, @JsonProperty("recallScope") String recallScope,
+      @JsonProperty("iamGroup") String iamGroup) {
 
-    this.name = name;
+    this.voName = name;
     this.path = path;
     this.readScope = readScope;
     this.recallScope = recallScope;
@@ -41,17 +40,17 @@ public class VirtualOrganization {
    * 
    * @param builder instance.
    */
-  public VirtualOrganization(Builder builder) {
+  public VirtualFileSystem(Builder builder) {
 
-    this.name = builder.name;
+    this.voName = builder.voName;
     this.path = builder.path;
     this.readScope = builder.readScope;
     this.recallScope = builder.recallScope;
     this.iamGroup = builder.iamGroup;
   }
 
-  public String getName() {
-    return name;
+  public String getVoName() {
+    return voName;
   }
 
   public String getPath() {
@@ -72,7 +71,7 @@ public class VirtualOrganization {
 
   @Override
   public String toString() {
-    return "VirtualOrganization [name=" + name + ", path=" + path + ", readScope=" + readScope
+    return "VirtualOrganization [voName=" + voName + ", path=" + path + ", readScope=" + readScope
         + ", recallScope=" + recallScope + ", iamGroup=" + iamGroup + "]";
   }
 
@@ -82,14 +81,14 @@ public class VirtualOrganization {
 
   public static class Builder {
 
-    private String name;
+    private String voName;
     private String path;
     private String readScope;
     private String recallScope;
     private String iamGroup;
 
-    public Builder name(String name) {
-      this.name = name;
+    public Builder voName(String voName) {
+      this.voName = voName;
       return this;
     }
 
@@ -113,8 +112,8 @@ public class VirtualOrganization {
       return this;
     }
 
-    public VirtualOrganization build() {
-      return new VirtualOrganization(this);
+    public VirtualFileSystem build() {
+      return new VirtualFileSystem(this);
     }
   }
 }

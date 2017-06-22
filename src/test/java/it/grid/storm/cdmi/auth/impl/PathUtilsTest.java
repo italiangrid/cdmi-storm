@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.Lists;
 
-import it.grid.storm.cdmi.config.VirtualOrganization;
+import it.grid.storm.cdmi.config.VirtualFileSystem;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,7 +18,7 @@ import org.junit.Test;
 
 public class PathUtilsTest {
 
-  private List<VirtualOrganization> vos;
+  private List<VirtualFileSystem> vos;
 
   private final String validPath = "/test/filename.dat";
   private final String validSubPath = "/test/sub/filename.dat";
@@ -29,30 +29,30 @@ public class PathUtilsTest {
   public void initOrganizations() throws IOException {
 
     vos = Lists.newArrayList();
-    vos.add(new VirtualOrganization("test", "/test", "test:read", "test:recall", "test"));
-    vos.add(new VirtualOrganization("subtest", "/test/sub", "subtest:read", "subtest:recall",
+    vos.add(new VirtualFileSystem("test", "/test", "test:read", "test:recall", "test"));
+    vos.add(new VirtualFileSystem("subtest", "/test/sub", "subtest:read", "subtest:recall",
         "subtest"));
   }
 
   @Test
   public void testMatchSuccess() throws IOException {
 
-    Optional<VirtualOrganization> vo = getVirtualOrganizationFromPath(vos, validSubPath);
+    Optional<VirtualFileSystem> vo = getVirtualOrganizationFromPath(vos, validSubPath);
     assertThat(vo.isPresent(), equalTo(true));
-    assertThat(vo.get().getName(), equalTo("subtest"));
+    assertThat(vo.get().getVoName(), equalTo("subtest"));
   }
 
   @Test
   public void testNotMatchingVirtualOrganization() throws IOException {
 
-    Optional<VirtualOrganization> vo = getVirtualOrganizationFromPath(vos, invalidPath);
+    Optional<VirtualFileSystem> vo = getVirtualOrganizationFromPath(vos, invalidPath);
     assertThat(vo.isPresent(), equalTo(false));
   }
 
   @Test
   public void testNotMatchingEmptyPath() throws IOException {
 
-    Optional<VirtualOrganization> vo = getVirtualOrganizationFromPath(vos, emptyPath);
+    Optional<VirtualFileSystem> vo = getVirtualOrganizationFromPath(vos, emptyPath);
     assertThat(vo.isPresent(), equalTo(false));
   }
 

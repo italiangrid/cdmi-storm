@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 
 import it.grid.storm.cdmi.auth.AuthorizationException;
 import it.grid.storm.cdmi.auth.AuthorizationManager;
-import it.grid.storm.cdmi.config.VirtualOrganization;
+import it.grid.storm.cdmi.config.VirtualFileSystem;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,13 +28,13 @@ public class DefaultAuthorizationManagerTest {
 
   private final String id = "UserId";
 
-  private VirtualOrganization vo;
+  private VirtualFileSystem vo;
   private AuthorizationManager authManager;
 
   @Before
   public void initOrganizations() throws IOException {
 
-    vo = VirtualOrganization.builder().name(voName).path(voPath).readScope(voReadScope)
+    vo = VirtualFileSystem.builder().voName(voName).path(voPath).readScope(voReadScope)
         .recallScope(voRecallScope).iamGroup(voGroup).build();
     authManager = new DefaultAuthorizationManager();
   }

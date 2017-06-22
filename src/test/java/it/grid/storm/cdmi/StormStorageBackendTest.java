@@ -26,7 +26,7 @@ import it.grid.storm.cdmi.config.PluginConfiguration;
 import it.grid.storm.cdmi.config.StormBackendCapability;
 import it.grid.storm.cdmi.config.StormBackendContainerCapability;
 import it.grid.storm.cdmi.config.StormBackendDatobjectCapability;
-import it.grid.storm.cdmi.config.VirtualOrganization;
+import it.grid.storm.cdmi.config.VirtualFileSystem;
 import it.grid.storm.gateway.BackendGateway;
 import it.grid.storm.gateway.BackendGatewayException;
 import it.grid.storm.rest.metadata.model.FileAttributes;
@@ -135,9 +135,9 @@ public class StormStorageBackendTest {
 
     AuthorizationManager authManager = Mockito.mock(AuthorizationManager.class);
     Mockito.doNothing().when(authManager).canRead(Mockito.any(User.class),
-        Mockito.any(VirtualOrganization.class));
+        Mockito.any(VirtualFileSystem.class));
     Mockito.doNothing().when(authManager).canRecall(Mockito.any(User.class),
-        Mockito.any(VirtualOrganization.class));
+        Mockito.any(VirtualFileSystem.class));
     return authManager;
   }
 
@@ -146,9 +146,9 @@ public class StormStorageBackendTest {
 
     AuthorizationManager authManager = Mockito.mock(AuthorizationManager.class);
     Mockito.doThrow(new AuthorizationException("error")).when(authManager)
-        .canRead(Mockito.any(User.class), Mockito.any(VirtualOrganization.class));
+        .canRead(Mockito.any(User.class), Mockito.any(VirtualFileSystem.class));
     Mockito.doThrow(new AuthorizationException("error")).when(authManager)
-        .canRecall(Mockito.any(User.class), Mockito.any(VirtualOrganization.class));
+        .canRecall(Mockito.any(User.class), Mockito.any(VirtualFileSystem.class));
     return authManager;
   }
 

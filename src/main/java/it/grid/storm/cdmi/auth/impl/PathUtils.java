@@ -2,7 +2,7 @@ package it.grid.storm.cdmi.auth.impl;
 
 import com.google.common.base.Preconditions;
 
-import it.grid.storm.cdmi.config.VirtualOrganization;
+import it.grid.storm.cdmi.config.VirtualFileSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +19,8 @@ public class PathUtils {
    * @return The @VirtualOrganization within the path is.
    * @throws IOException In case of IO problems.
    */
-  public static Optional<VirtualOrganization> getVirtualOrganizationFromPath(
-      List<VirtualOrganization> vos, String path) throws IOException {
+  public static Optional<VirtualFileSystem> getVirtualOrganizationFromPath(
+      List<VirtualFileSystem> vos, String path) throws IOException {
 
     Preconditions.checkArgument(vos != null, "Null list of VOs");
     Preconditions.checkArgument(path != null, "Null path");
@@ -29,12 +29,12 @@ public class PathUtils {
       return Optional.empty();
     }
 
-    Optional<VirtualOrganization> vo = Optional.empty();
+    Optional<VirtualFileSystem> vo = Optional.empty();
 
     File targetBase = null;
     File child = new File(path);
 
-    for (VirtualOrganization currentVo : vos) {
+    for (VirtualFileSystem currentVo : vos) {
 
       File base = new File(currentVo.getPath());
       if (isSubDirectory(base, child)) {

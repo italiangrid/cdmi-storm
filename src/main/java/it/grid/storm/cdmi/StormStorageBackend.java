@@ -18,7 +18,7 @@ import it.grid.storm.cdmi.capability.CapabilityManager;
 import it.grid.storm.cdmi.capability.impl.DefaultCapabilityManager;
 import it.grid.storm.cdmi.config.PluginConfiguration;
 import it.grid.storm.cdmi.config.StormBackendCapability;
-import it.grid.storm.cdmi.config.VirtualOrganization;
+import it.grid.storm.cdmi.config.VirtualFileSystem;
 import it.grid.storm.gateway.BackendGateway;
 import it.grid.storm.gateway.BackendGatewayException;
 import it.grid.storm.gateway.impl.StormBackendGateway;
@@ -45,7 +45,7 @@ public class StormStorageBackend implements StorageBackend {
   private BackendGateway backendGateway;
   private AuthorizationManager authManager;
   private UserProvider userProvider;
-  private List<VirtualOrganization> vos;
+  private List<VirtualFileSystem> vos;
 
   private CapabilityManager<StoriMetadata> capManager;
   private Map<String, Object> exportAttributes;
@@ -62,7 +62,7 @@ public class StormStorageBackend implements StorageBackend {
     backendCapabilities = buildBackendCapabilities(capabilities);
     backendGateway = new StormBackendGateway(config.getBackend().getHostname(),
         config.getBackend().getPort(), config.getBackend().getToken());
-    vos = config.getVos();
+    vos = config.getVfs();
     authManager = new DefaultAuthorizationManager();
     userProvider = new SecurityContextUserProvider();
     capManager = new DefaultCapabilityManager(backendCapabilities);
@@ -113,7 +113,7 @@ public class StormStorageBackend implements StorageBackend {
 
     CdmiObjectStatus status;
     User user = getUser();
-    Optional<VirtualOrganization> vo = getVirtualOrganizationFromPath(path);
+    Optional<VirtualFileSystem> vo = getVirtualOrganizationFromPath(path);
 
     if (vo.isPresent()) {
 
@@ -153,7 +153,7 @@ public class StormStorageBackend implements StorageBackend {
     return status;
   }
 
-  private Optional<VirtualOrganization> getVirtualOrganizationFromPath(String path)
+  private Optional<VirtualFileSystem> getVirtualOrganizationFromPath(String path)
       throws BackEndException {
 
     try {
@@ -180,7 +180,7 @@ public class StormStorageBackend implements StorageBackend {
     CdmiObjectStatus currentStatus =
         new CdmiObjectStatus(cap.getMetadata(), currentCapabilitiesUri, null);
     List<String> children = Lists.newArrayList();
-    for (VirtualOrganization vo : vos) {
+    for (VirtualFileSystem vo : vos) {
       children.add(vo.getPath());
     }
     currentStatus.setChildren(children);
@@ -196,7 +196,7 @@ public class StormStorageBackend implements StorageBackend {
     log.info("Transition to {} requested by {} for {}", targetCapabilitiesUri, user.getUserId(),
         path);
 
-    Optional<VirtualOrganization> vo = getVirtualOrganizationFromPath(path);
+    Optional<VirtualFileSystem> vo = getVirtualOrganizationFromPath(path);
 
     if (vo.isPresent()) {
 
@@ -271,9 +271,9 @@ public class StormStorageBackend implements StorageBackend {
     return user;
   }
 
-  private void checkReadPermissions(User user, VirtualOrganization vo) throws BackEndException {
+  private void checkReadPermissions(User user, VirtualFileSystem vo) throws BackEndException {
 
-    log.debug("Check read permissions for user {} into vo {}", user.getUserId(), vo.getName());
+    log.debug("Check read permissions for user {} into vo {}", user.getUserId(), vo.getVoName());
 
     try {
 
@@ -281,7 +281,7 @@ public class StormStorageBackend implements StorageBackend {
 
     } catch (AuthorizationException e) {
 
-      log.warn("User {} is not authorized to read into vo {}", user.getUserId(), vo.getName());
+      log.warn("User {} is not authorized to read into vo {}", user.getUserId(), vo.getVoName());
       throw new PermissionDeniedBackEndException(e);
 
     } catch (IOException e) {
@@ -291,12 +291,12 @@ public class StormStorageBackend implements StorageBackend {
 
     }
 
-    log.debug("User {} is authorized to read into {}", user.getUserId(), vo.getName());
+    log.debug("User {} is authorized to read into {}", user.getUserId(), vo.getVoName());
   }
 
-  private void checkRecallPermissions(User user, VirtualOrganization vo) throws BackEndException {
+  private void checkRecallPermissions(User user, VirtualFileSystem vo) throws BackEndException {
 
-    log.debug("Check recall permissions for user {} into vo {}", user.getUserId(), vo.getName());
+    log.debug("Check recall permissions for user {} into vo {}", user.getUserId(), vo.getVoName());
 
     try {
 
@@ -304,7 +304,7 @@ public class StormStorageBackend implements StorageBackend {
 
     } catch (AuthorizationException e) {
 
-      log.warn("User {} is not authorized to recall into vo {}", user.getUserId(), vo.getName());
+      log.warn("User {} is not authorized to recall into vo {}", user.getUserId(), vo.getVoName());
       throw new PermissionDeniedBackEndException(e);
 
     } catch (IOException e) {
@@ -313,7 +313,7 @@ public class StormStorageBackend implements StorageBackend {
       throw new BackEndException(e);
     }
 
-    log.debug("User {} is authorized to recall files into {}", user.getUserId(), vo.getName());
+    log.debug("User {} is authorized to recall files into {}", user.getUserId(), vo.getVoName());
   }
 
 }

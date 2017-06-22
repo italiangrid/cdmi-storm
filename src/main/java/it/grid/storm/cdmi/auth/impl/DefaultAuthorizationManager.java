@@ -5,7 +5,7 @@ import com.google.common.base.Preconditions;
 import it.grid.storm.cdmi.auth.AuthorizationException;
 import it.grid.storm.cdmi.auth.AuthorizationManager;
 import it.grid.storm.cdmi.auth.User;
-import it.grid.storm.cdmi.config.VirtualOrganization;
+import it.grid.storm.cdmi.config.VirtualFileSystem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +18,13 @@ public class DefaultAuthorizationManager implements AuthorizationManager {
   private static final Logger log = LoggerFactory.getLogger(DefaultAuthorizationManager.class);
 
   @Override
-  public void canRead(User user, VirtualOrganization vo)
+  public void canRead(User user, VirtualFileSystem vo)
       throws AuthorizationException, IOException {
 
     Preconditions.checkArgument(user != null, "Invalid null User");
     Preconditions.checkArgument(vo != null, "Invalid null Virtual Organization");
 
-    log.debug("Checking if user {} can read vo {} ...", user.getUserId(), vo.getName());
+    log.debug("Checking if user {} can read vo {} ...", user.getUserId(), vo.getVoName());
 
     if (user.hasAuthority(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
 
@@ -49,13 +49,13 @@ public class DefaultAuthorizationManager implements AuthorizationManager {
   }
 
   @Override
-  public void canRecall(User user, VirtualOrganization vo)
+  public void canRecall(User user, VirtualFileSystem vo)
       throws AuthorizationException, IOException {
 
     Preconditions.checkArgument(user != null, "Invalid null User");
     Preconditions.checkArgument(vo != null, "Invalid null Virtual Organization");
 
-    log.debug("Checking if user {} can read vo {} ...", user.getUserId(), vo.getName());
+    log.debug("Checking if user {} can read vo {} ...", user.getUserId(), vo.getVoName());
 
     if (user.hasAuthority(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
 

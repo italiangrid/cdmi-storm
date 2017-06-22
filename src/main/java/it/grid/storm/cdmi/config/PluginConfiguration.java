@@ -11,33 +11,33 @@ import java.util.List;
 public class PluginConfiguration {
 
   private BackendConfiguration backend;
-  private List<VirtualOrganization> vos;
+  private List<VirtualFileSystem> vfs;
 
   /**
    * Constructor.
    * 
    * @param backend The @BackendConfiguration info.
-   * @param vos Info about the supported @VirtualOrganization.
+   * @param vfs List of the supported @VirtualFileSystem.
    */
   @JsonCreator
   public PluginConfiguration(@JsonProperty("backend") BackendConfiguration backend,
-      @JsonProperty("vos") List<VirtualOrganization> vos) {
+      @JsonProperty("vfs") List<VirtualFileSystem> vfs) {
 
     this.backend = backend;
-    this.vos = vos;
+    this.vfs = vfs;
   }
 
   public BackendConfiguration getBackend() {
     return backend;
   }
 
-  public List<VirtualOrganization> getVos() {
-    return vos;
+  public List<VirtualFileSystem> getVfs() {
+    return vfs;
   }
 
   @Override
   public String toString() {
-    return "PluginConfiguration [backend=" + backend + ", vos=" + vos + "]";
+    return "PluginConfiguration [backend=" + backend + ", vfs=" + vfs + "]";
   }
 
 }

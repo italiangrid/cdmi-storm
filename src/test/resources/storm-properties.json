@@ -4,19 +4,19 @@
         "port": 9998,
         "token": "testtoken"
     },
-    "vos": [
+    "vfs": [
         {
-            "name": "test.vo",
-            "read-scope": "testvo:read",
-            "recall-scope": "testvo:recall",
-            "iam-group": "test.vo-users",
+            "voName": "test.vo",
+            "readScope": "testvo:read",
+            "recallScope": "testvo:recall",
+            "iamGroup": "test.vo-users",
             "path": "/test.vo"
         },
         {
-            "name": "cms",
-            "read-scope": "cms:read",
-            "recall-scope": "cms:recall",
-            "iam-group": "cms-users",
+            "voName": "cms",
+            "readScope": "cms:read",
+            "recallScope": "cms:recall",
+            "iamGroup": "cms-users",
             "path": "/cms"
         }
     ]

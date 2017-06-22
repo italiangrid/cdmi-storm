@@ -36,12 +36,12 @@ public class PluginConfigurationTest {
     assertThat(pc.getBackend().getHostname(), equalTo("test-hostname.local.io"));
     assertThat(pc.getBackend().getPort(), equalTo(9998));
     assertThat(pc.getBackend().getToken(), equalTo("testtoken"));
-    assertThat(pc.getVos().size(), equalTo(2));
-    assertThat(pc.getVos().get(0).getName(), equalTo("test.vo"));
-    assertThat(pc.getVos().get(0).getIamGroup(), equalTo("test.vo-users"));
-    assertThat(pc.getVos().get(0).getReadScope(), equalTo("testvo:read"));
-    assertThat(pc.getVos().get(0).getRecallScope(), equalTo("testvo:recall"));
-    assertThat(pc.getVos().get(0).getPath(), equalTo("/test.vo"));
+    assertThat(pc.getVfs().size(), equalTo(2));
+    assertThat(pc.getVfs().get(0).getVoName(), equalTo("test.vo"));
+    assertThat(pc.getVfs().get(0).getIamGroup(), equalTo("test.vo-users"));
+    assertThat(pc.getVfs().get(0).getReadScope(), equalTo("testvo:read"));
+    assertThat(pc.getVfs().get(0).getRecallScope(), equalTo("testvo:recall"));
+    assertThat(pc.getVfs().get(0).getPath(), equalTo("/test.vo"));
     log.info(pc.toString());
   }
 
