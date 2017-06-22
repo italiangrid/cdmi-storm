@@ -1,4 +1,8 @@
-# INDIGO-DataCloud CDMI StoRM plugin
+# CDMI StoRM
 
-The Java Service Provider implementation for CDMI StoRM storage back-end plugin.
-Runnable within [INDIGO CDMI server](https://github.com/indigo-dc/CDMI).
+CDMI StoRM implements the Java Service Provider Interface [cdmi-spi](https://github.com/indigo-dc/cdmi-spi) to provide a plugin for the [INDIGO DataCloud CDMI server](https://github.com/indigo-dc/cdmi) in order to support StoRM as storage back-end and allow users to negotiate the Quality of Service of stored data.
+
+
+
+![](/assets/cdmi-storm.png)
+
