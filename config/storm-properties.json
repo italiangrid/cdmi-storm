@@ -1,16 +1,16 @@
 {
-	"backend": {
-		"hostname": "{storm-backend-hostname}",
-		"port": 9998,
-		"token": "{your-xmlrpc-token}"
-	},
-	"vos": [
+    "backend": {
+        "hostname": "localhost",
+        "port": 9998,
+        "token": "secret"
+    },
+    "vfs": [
         {
-            "name": "test.vo",
-            "read-scope": "testvo:read",
-            "recall-scope": "testvo:recall",
-            "iam-group": "test.vo-users",
-            "path": "/test.vo"
+            "voName": "vo",
+            "readScope": "vo:read",
+            "recallScope": "vo:recall",
+            "iamGroup": "vo-users",
+            "path": "/vo"
         }
     ]
 }
