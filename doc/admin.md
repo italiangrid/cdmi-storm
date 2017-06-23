@@ -25,6 +25,8 @@ Edit CDMI server main configuration file by specifying storm as storage backend 
 
     vim /var/lib/cdmi-server/config/application.yml
 
+Change:
+
     cdmi:
       qos:
         backend:
@@ -33,6 +35,8 @@ Edit CDMI server main configuration file by specifying storm as storage backend 
 Edit StoRM plugin configuration file:
 
     vim /etc/cdmi-server/plugins/storm-properties.json
+
+Insert StoRM Backend info and the list of the Virtual File System for which CDMI server can negotiate QoS:
 
     {
         "backend": {
@@ -54,6 +58,7 @@ Edit StoRM plugin configuration file:
 The backend properties that can be set are:
 
 | **Property** | **Description** |
+|:-------------|:----------------|
 | **hostname** | StoRM Backend hostname to contact to retrieve file's metadata info and trigger file recalls from tape. |
 | **port** | StoRM Backend REST interface port. Default: **9998**. |
 | **token** | A secret token used to authorize REST requests. Use the value of the xmlrpc token used by the referenced StoRM instance (see [StoRM SysAdmin Guide](http://italiangrid.github.io/storm/documentation/sysadmin-guide/1.11.11/#GeneralYAIMvariables)). |
@@ -62,6 +67,7 @@ A list of the Virtual File Systems supported has to be specified with ```vfs```.
 Each element of the list has the following properties:
 
 | **Property** | **Description** |
+|:-------------|:----------------|
 | **voName** | The name of the Virtual Organization associated to the VFS. |
 | **readScope** | The OAuth scope that allows user to be authorized to get the status of a resource. |
 | **recallScope** | The OAuth scope that allows user to be authorized to change the status of a resource. |
