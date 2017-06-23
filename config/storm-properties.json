@@ -2,7 +2,7 @@
     "backend": {
         "hostname": "localhost",
         "port": 9998,
-        "token": "secret"
+        "token": "secret-token"
     },
     "vfs": [
         {
