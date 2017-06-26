@@ -4,3 +4,5 @@ CDMI StoRM implements the Java Service Provider Interface [cdmi-spi](https://git
 
 ![](/assets/cdmi-storm.png)
 
+Refer to the [CDMI server user guide](https://indigo-dc.gitbooks.io/cdmi-qos/content/doc/api_walkthrough.html) for all the details about INDIGO DataCloud QoS management.
+
