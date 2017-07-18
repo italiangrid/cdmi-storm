@@ -33,6 +33,34 @@ pipeline {
         }
       }
 
+      stage ('checkstyle') {
+        steps {
+          sh "mvn checkstyle:check -Dcheckstyle.config.location=google_checks.xml"
+          script {
+            step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher',
+              pattern: '**/target/checkstyle-result.xml',
+              healty: '20',
+              unHealty: '100'])
+          }
+        }
+      }
+
+      stage ('coverage') {
+        steps {
+          sh 'mvn cobertura:cobertura -Dcobertura.report.format=html -DfailIfNoTests=false'
+          script {
+            publishHTML(target: [
+              reportName           : 'Coverage Report',
+              reportDir            : 'target/site/cobertura/',
+              reportFiles          : 'index.html',
+              keepAll              : true,
+              alwaysLinkToLastBuild: true,
+              allowMissing         : false
+            ])
+          }
+        }
+      }
+
       stage('package') {
         steps {
           sh 'mvn -B -DskipTests=true clean package'
