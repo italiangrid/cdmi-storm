@@ -14,12 +14,7 @@ pipeline {
               checkout scm
           }
       }
-      
-      stage('build') {
-          steps {
-              sh 'mvn clean compile'
-          }
-      }
+
       stage('build') {
         steps {
           sh 'mvn -B clean compile'
