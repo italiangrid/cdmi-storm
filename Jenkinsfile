@@ -48,17 +48,12 @@ pipeline {
       stage ('coverage') {
         steps {
           container('maven-runner') {
-            sh 'mvn cobertura:cobertura -Dcobertura.report.format=html -DfailIfNoTests=false'
-            script {
-              publishHTML(target: [
-                reportName           : 'Coverage Report',
-                reportDir            : 'target/site/cobertura/',
-                reportFiles          : 'index.html',
-                keepAll              : true,
-                alwaysLinkToLastBuild: true,
-                allowMissing         : false
-              ])
-            }
+            sh 'mvn cobertura:cobertura -Dcobertura.report.format=xml -DfailIfNoTests=false'
+          }
+        }
+        post {
+          always {
+            step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/target/site/cobertura/coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
           }
         }
       }
