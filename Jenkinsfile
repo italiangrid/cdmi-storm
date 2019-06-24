@@ -1,5 +1,13 @@
 pipeline {
-  agent { label 'maven' }
+
+  agent {
+    kubernetes {
+      label "cdmi-storm-${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}"
+      cloud 'Kube mwdevel'
+      defaultContainer 'jnlp'
+      inheritFrom 'ci-template'
+    }
+  }
 
   options {
       timeout(time: 1, unit: 'HOURS')
@@ -11,7 +19,7 @@ pipeline {
   stages {
       stage('build') {
         steps {
-          container('maven-runner') {
+          container('runner') {
             sh 'mvn -B clean compile'
           }
         }
@@ -19,7 +27,7 @@ pipeline {
   
       stage('test') {
         steps {
-          container('maven-runner') {
+          container('runner') {
             sh 'mvn -B clean test'
           }
         }
@@ -33,7 +41,7 @@ pipeline {
 
       stage ('checkstyle') {
         steps {
-          container('maven-runner') {
+          container('runner') {
             sh "mvn checkstyle:check -Dcheckstyle.config.location=google_checks.xml"
             script {
               step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher',
@@ -47,7 +55,7 @@ pipeline {
 
       stage ('coverage') {
         steps {
-          container('maven-runner') {
+          container('runner') {
             sh 'mvn cobertura:cobertura -Dcobertura.report.format=xml -DfailIfNoTests=false'
           }
         }
@@ -60,7 +68,7 @@ pipeline {
 
       stage('package') {
         steps {
-          container('maven-runner') {
+          container('runner') {
             sh 'mvn -B -DskipTests=true clean package'
             script {
               currentBuild.result = 'SUCCESS'
