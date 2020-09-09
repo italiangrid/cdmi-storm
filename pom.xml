@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.grid.storm</groupId>
 	<artifactId>cdmi-storm</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 
 	<packaging>jar</packaging>
 
@@ -17,7 +17,7 @@
 		<jsonVersion>20160810</jsonVersion>
 		<httpComponentsVersion>4.5.2</httpComponentsVersion>
 		<logbackVersion>1.1.3</logbackVersion>
-		<jacksonDatabindVersion>2.8.4</jacksonDatabindVersion>
+		<jacksonDatabindVersion>2.9.10.4</jacksonDatabindVersion>
 		<guavaVersion>21.0</guavaVersion>
 		<!-- Tests -->
 		<jUnitVersion>4.11</jUnitVersion>
