@@ -42,20 +42,6 @@ pipeline {
         }
       }
 
-      stage ('checkstyle') {
-        steps {
-          container('runner') {
-            sh "mvn checkstyle:check -Dcheckstyle.config.location=google_checks.xml"
-            script {
-              step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher',
-                pattern: '**/target/checkstyle-result.xml',
-                healty: '20',
-                unHealty: '100'])
-            }
-          }
-        }
-      }
-
       stage ('coverage') {
         steps {
           container('runner') {
