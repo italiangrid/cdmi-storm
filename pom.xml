@@ -15,7 +15,7 @@
 		<!-- dependencies -->
 		<cdmi-spi.version>0.4</cdmi-spi.version>
 		<jsonVersion>20160810</jsonVersion>
-		<httpComponentsVersion>4.5.2</httpComponentsVersion>
+		<httpComponentsVersion>4.5.13</httpComponentsVersion>
 		<logbackVersion>1.1.3</logbackVersion>
 		<jacksonDatabindVersion>2.9.10.4</jacksonDatabindVersion>
 		<guavaVersion>21.0</guavaVersion>
